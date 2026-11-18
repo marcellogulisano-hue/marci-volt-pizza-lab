@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marci's Volt Pizza Lab - Pizza Calculator & Guide</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#121212',
+                        cardbg: '#1e1e1e',
+                        accent: '#ff6b35',
+                        accenthover: '#e85a24',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Inter & Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-darkbg text-zinc-100 min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white">
+
+    <!-- Header -->
+    <header class="border-b border-zinc-800 bg-cardbg/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-amber-600 flex items-center justify-center shadow-lg shadow-accent/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        MARCI'S VOLT PIZZA LAB <span class="text-xs px-2 py-0.5 rounded-full bg-accent/20 text-accent font-medium">Pizza App</span>
+                    </h1>
+                    <p class="text-xs text-zinc-400">Il tuo assistente intelligente per forno elettrico</p>
+                </div>
+            </div>
+            <!-- Navigation tabs -->
+            <div class="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+                <button onclick="switchTab('calculator')" id="tab-calculator-btn" class="px-4 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm">🧮 Calcolatore</button>
+                <button onclick="switchTab('guide-prep')" id="tab-guide-prep-btn" class="px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all">📋 Guida Passo-Passo</button>
+                <button onclick="switchTab('guide-volt')" id="tab-guide-volt-btn" class="px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all">🔥 Guida Forno</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- SECTION 1: CALCULATOR -->
+        <div id="section-calculator" class="space-y-8">
+            
+            <!-- Stili Pizza Selector con Immagini Reali Corrette -->
+            <div>
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-3">1. Seleziona lo stile di pizza</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="style-cards">
+                    <!-- Napoletana -->
+                    <div onclick="setStyle('napoletana')" id="card-napoletana" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-accent transition-all hover:border-accent/80 shadow-lg relative overflow-hidden group">
+                        <div class="h-28 w-full overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80" alt="Pizza Napoletana" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-accent text-white shadow">65% Idr.</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-base text-white mb-1">Napoletana</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Cornicione pronunciato e cottura fulminea a 450°C.</p>
+                        </div>
+                    </div>
+                    <!-- Romana in Teglia -->
+                    <div onclick="setStyle('romana')" id="card-romana" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group">
+                        <div class="h-28 w-full overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1585238342024-78d387f4a707?auto=format&fit=crop&w=600&q=80" alt="Romana in Teglia" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-600 text-white shadow">80% Idr.</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-base text-white mb-1">Romana in Teglia</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Alta idratazione, croccante sotto e soffice dentro.</p>
+                        </div>
+                    </div>
+                    <!-- Pinsa / Classica -->
+                    <div onclick="setStyle('pinsa')" id="card-pinsa" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group">
+                        <div class="h-28 w-full overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80" alt="Tonda Classica" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow">70% Idr.</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-base text-white mb-1">Tonda Classica</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Sottile e croccante con olio e zucchero.</p>
+                        </div>
+                    </div>
+                    <!-- Panuozzo -->
+                    <div onclick="setStyle('panuozzo')" id="card-panuozzo" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group">
+                        <div class="h-28 w-full overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=600&q=80" alt="Panuozzo di Gragnano" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-600 text-white shadow">68% Idr.</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-base text-white mb-1">Panuozzo</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Formato allungato, cottura e farcitura doppia.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parametri di Configurazione -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Controlli Numerici -->
+                <div class="lg:col-span-2 bg-cardbg p-6 rounded-2xl border border-zinc-800 shadow-lg space-y-6">
+                    <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">2. Parametri Impasto & Ingredienti Extra</h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2 flex justify-between">
+                                <span>Numero panetti / pezzi:</span>
+                                <span id="val-num-pizze" class="text-accent font-bold">4</span>
+                            </label>
+                            <input type="range" id="input-num-pizze" min="1" max="20" value="4" oninput="updateCalculation()" class="w-full accent-accent bg-zinc-800 h-2 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2 flex justify-between">
+                                <span>Peso singolo pezzo:</span>
+                                <span id="val-grammi-panetto" class="text-accent font-bold">250g</span>
+                            </label>
+                            <input type="range" id="input-grammi-panetto" min="150" max="350" step="10" value="250" oninput="updateCalculation()" class="w-full accent-accent bg-zinc-800 h-2 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 border-t border-zinc-800/80">
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2">Metodo di Impasto</label>
+                            <select id="select-metodo" onchange="updateCalculation()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-accent">
+                                <option value="planetaria">Planetaria (Kenwood XL)</option>
+                                <option value="mano">A mano (Tradizionale)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2">Tipo di Lievito</label>
+                            <select id="select-lievito" onchange="updateCalculation()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-accent">
+                                <option value="fresco">Lievito di Birra Fresco (LBF)</option>
+                                <option value="secco">Lievito di Birra Secco (LBS)</option>
+                                <option value="madre">Pasta Madre / Li.Co.Re.</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 border-t border-zinc-800/80">
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2">Ore di Lievitazione a T.A. (~20°C)</label>
+                            <select id="select-ore" onchange="updateCalculation()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-accent">
+                                <option value="8">8 Ore (Diretto rapido)</option>
+                                <option value="24" selected>24 Ore (2h TA + 22h Frigo)</option>
+                                <option value="48">48 Ore (Lievitazione lenta frigo)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center justify-around pt-6">
+                            <div class="flex items-center justify-between bg-zinc-900 p-3 rounded-xl border border-zinc-800 flex-1 mr-2">
+                                <span class="text-xs font-medium text-zinc-300">Olio (2%)</span>
+                                <input type="checkbox" id="check-olio" onchange="updateCalculation()" class="w-4 h-4 accent-accent rounded cursor-pointer">
+                            </div>
+                            <div class="flex items-center justify-between bg-zinc-900 p-3 rounded-xl border border-zinc-800 flex-1 ml-2">
+                                <span class="text-xs font-medium text-zinc-300">Zucchero (1%)</span>
+                                <input type="checkbox" id="check-zucchero" onchange="updateCalculation()" class="w-4 h-4 accent-accent rounded cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Temperatura & Forno Consigliata -->
+                <div class="bg-gradient-to-br from-cardbg to-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs uppercase font-bold tracking-wider text-accent">Setup Forno Elettrico</span>
+                            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </div>
+                        <h3 id="display-style-title" class="font-bold text-xl text-white mb-2">Napoletana</h3>
+                        <p id="display-style-desc" class="text-xs text-zinc-400 mb-4">Impostazioni predefinite consigliate dal display digitale per questo stile.</p>
+                    </div>
+
+                    <div class="space-y-3 bg-zinc-950/60 p-4 rounded-xl border border-zinc-800/60">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-zinc-400">Temperatura Cielo:</span>
+                            <span id="target-cielo" class="font-bold text-amber-400 text-sm">450°C</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-zinc-400">Temperatura Platea:</span>
+                            <span id="target-platea" class="font-bold text-amber-400 text-sm">420°C</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs pt-2 border-t border-zinc-800">
+                            <span class="text-zinc-400">Tempo di cottura:</span>
+                            <span id="target-tempo" class="font-bold text-white">~90 secondi</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tabella dei Risultati in Tempo Reale -->
+            <div class="bg-cardbg rounded-2xl border border-zinc-800 shadow-xl overflow-hidden">
+                <div class="p-6 border-b border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Tabella Ingredienti Consigliati</h2>
+                        <p class="text-xs text-zinc-400">Dosi calcolate automaticamente al grammo con supporto per olio e zucchero</p>
+                    </div>
+                    <button onclick="copyRecipe()" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-all flex items-center gap-2 border border-zinc-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        Copia Ricetta
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-y lg:divide-y-0 divide-zinc-800 text-center">
+                    <div class="p-4">
+                        <span class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Farina 00</span>
+                        <span id="res-farina" class="text-2xl font-extrabold text-white">0</span>
+                        <span class="text-zinc-400 text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4">
+                        <span id="label-idratazione" class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Acqua</span>
+                        <span id="res-acqua" class="text-2xl font-extrabold text-accent">0</span>
+                        <span class="text-accent text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4">
+                        <span class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Sale (2.5%)</span>
+                        <span id="res-sale" class="text-2xl font-extrabold text-white">0</span>
+                        <span class="text-zinc-400 text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4" id="box-res-olio">
+                        <span class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Olio (2%)</span>
+                        <span id="res-olio" class="text-2xl font-extrabold text-amber-400">0</span>
+                        <span class="text-amber-400 text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4" id="box-res-zucchero">
+                        <span class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Zucchero (1%)</span>
+                        <span id="res-zucchero" class="text-2xl font-extrabold text-amber-400">0</span>
+                        <span class="text-amber-400 text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4">
+                        <span id="label-lievito" class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Lievito</span>
+                        <span id="res-lievito" class="text-2xl font-extrabold text-white">0</span>
+                        <span id="unit-lievito" class="text-zinc-400 text-xs ml-0.5">g</span>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-900/60 px-6 py-4 border-t border-zinc-800 flex flex-col sm:flex-row justify-between text-xs text-zinc-400 gap-2">
+                    <div>Peso totale impasto: <strong id="res-totale" class="text-white">0 g</strong></div>
+                    <div>Idratazione effettiva: <strong id="res-idr-testo" class="text-white">65%</strong></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECTION 2: GUIDA PASSO PASSO -->
+        <div id="section-guide-prep" class="hidden space-y-8">
+            <div class="bg-cardbg p-8 rounded-3xl border border-zinc-800 shadow-xl space-y-6">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <span>📋 Guida Passo-Passo & Setup Forno</span>
+                        </h2>
+                        <p class="text-xs text-zinc-400 mt-1">Procedura ottimizzata per <span id="guide-style-name" class="text-accent font-semibold">Napoletana</span> (<span id="guide-hours-text" class="text-accent font-semibold">24 Ore</span>) con impasto <span id="guide-metodo-text" class="text-accent font-semibold">Planetaria (Kenwood XL)</span></p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-bold" id="guide-badge-mode">Programma Ufficiale</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="steps-container">
+                    <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 space-y-2">
+                        <div class="text-accent font-bold text-sm">Fase 1: Impasto (<span id="guide-step1-title">Planetaria Kenwood XL</span>)</div>
+                        <p id="step-1-text" class="text-xs text-zinc-300 leading-relaxed">Usa il gancio impastatore. Sciogli il lievito nell'acqua, versa l'80% della farina e avvia a velocità bassa (1-2). Unisci lo zucchero, poi la farina restante, il sale e infine l'olio (se previsto) aumentando a velocità 2-3 fino a incordatura.</p>
+                    </div>
+                    <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 space-y-2">
+                        <div class="text-accent font-bold text-sm">Fase 2: Lievitazione (<span id="guide-hours-badge" class="text-accent font-bold">24h</span>) & Panetti (<span id="guide-weight-info" class="text-accent font-bold">250g</span>)</div>
+                        <p id="step-2-text" class="text-xs text-zinc-300 leading-relaxed">Gestione della puntata e maturazione a temperatura ambiente e frigorifero in base alle ore selezionate nel calcolatore.</p>
+                    </div>
+                    <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 space-y-2">
+                        <div class="text-accent font-bold text-sm">Fase 3: Cottura Ooni Volt 2</div>
+                        <p id="step-3-text" class="text-xs text-zinc-300 leading-relaxed">Preriscalda il forno impostando i valori corretti da display digitale o manuale.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: OONI VOLT 2 GUIDE -->
+        <div id="section-guide-volt" class="hidden space-y-8">
+            <div class="bg-cardbg p-8 rounded-3xl border border-zinc-800 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+                <h2 class="text-2xl font-bold text-white mb-2">Guida Ufficiale Forno Elettrico & Consigli Pro</h2>
+                <p class="text-sm text-zinc-400 max-w-2xl mb-8">Tutto quello che devi sapere per gestire al meglio le temperature, la pietra refrattaria e le funzioni digitali del tuo forno.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+                        <div class="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center text-accent font-bold mb-4">1</div>
+                        <h3 class="font-bold text-white text-base mb-2">Preriscaldamento Perfetto</h3>
+                        <p class="text-xs text-zinc-400 leading-relaxed">Accendi il forno almeno 20-30 minuti prima di infornare. La pietra refrattaria ha bisogno di accumulare calore in modo uniforme per garantire una base croccante e ben lievitata.</p>
+                    </div>
+                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+                        <div class="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center text-accent font-bold mb-4">2</div>
+                        <h3 class="font-bold text-white text-base mb-2">Gestione Termica</h3>
+                        <p class="text-xs text-zinc-400 leading-relaxed">Sfrutta il display digitale e i programmi. Regola separatamente la resistenza superiore (Cielo) e inferiore (Platea) in base allo stile di pizza per evitare bruciature sul cornicione.</p>
+                    </div>
+                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+                        <div class="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center text-accent font-bold mb-4">3</div>
+                        <h3 class="font-bold text-white text-base mb-2">Manutenzione della Pietra</h3>
+                        <p class="text-xs text-zinc-400 leading-relaxed">Per pulire la pietra, porta il forno a temperatura elevata a vuoto per 30 minuti: i residui si carbonizzeranno riducendosi in cenere. A freddo, rimuovili con una spazzola morbida. Non usare mai acqua!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-zinc-800 py-6 text-center text-xs text-zinc-500">
+        <p>Marci's Volt Pizza Lab • Ottimizzato per la gestione avanzata dell'impasto e della cottura in casa.</p>
+    </footer>
+
+    <script>
+        // State Application
+        let currentStyle = 'napoletana';
+
+        const styleData = {
+            napoletana: {
+                name: 'Napoletana',
+                desc: 'Cornicione pronunciato e cottura fulminea a 450°C.',
+                idr: 65,
+                sale: 2.5,
+                cielo: '450°C',
+                platea: '420°C',
+                tempo: '~90 secondi',
+                badge: 'Programma Ufficiale'
+            },
+            romana: {
+                name: 'Romana in Teglia',
+                desc: 'Alta idratazione, croccante sotto e soffice dentro.',
+                idr: 80,
+                sale: 2.8,
+                cielo: '300°C',
+                platea: '320°C',
+                tempo: '~6-8 minuti',
+                badge: 'Modalità Teglia / Manuale'
+            },
+            pinsa: {
+                name: 'Tonda Classica',
+                desc: 'Sottile e croccante con olio e zucchero.',
+                idr: 62,
+                sale: 2.5,
+                cielo: '380°C',
+                platea: '350°C',
+                tempo: '~3-4 minuti',
+                badge: 'Programma Classico'
+            },
+            panuozzo: {
+                name: 'Panuozzo',
+                desc: 'Formato allungato, cottura e farcitura doppia.',
+                idr: 68,
+                sale: 2.5,
+                cielo: '400°C',
+                platea: '380°C',
+                tempo: '~3-5 minuti (2 cotture)',
+                badge: 'Programma Panuozzo'
+            }
+        };
+
+        function switchTab(tabId) {
+            document.getElementById('section-calculator').classList.add('hidden');
+            document.getElementById('section-guide-prep').classList.add('hidden');
+            document.getElementById('section-guide-volt').classList.add('hidden');
+
+            document.getElementById('tab-calculator-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all";
+            document.getElementById('tab-guide-prep-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all";
+            document.getElementById('tab-guide-volt-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all";
+
+            if (tabId === 'calculator') {
+                document.getElementById('section-calculator').classList.remove('hidden');
+                document.getElementById('tab-calculator-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm";
+            } else if (tabId === 'guide-prep') {
+                document.getElementById('section-guide-prep').classList.remove('hidden');
+                document.getElementById('tab-guide-prep-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm";
+            } else if (tabId === 'guide-volt') {
+                document.getElementById('section-guide-volt').classList.remove('hidden');
+                document.getElementById('tab-guide-volt-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm";
+            }
+        }
+
+        function setStyle(styleKey) {
+            currentStyle = styleKey;
+            ['napoletana', 'romana', 'pinsa', 'panuozzo'].forEach(s => {
+                const card = document.getElementById(`card-${s}`);
+                if (s === styleKey) {
+                    card.className = "style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-accent transition-all hover:border-accent/80 shadow-lg relative overflow-hidden group";
+                } else {
+                    card.className = "style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group";
+                }
+            });
+
+            // Imposta idratazione predefinita per lo stile
+            updateCalculation();
+        }
+
+        function updateCalculation() {
+            const numPizze = parseInt(document.getElementById('input-num-pizze').value);
+            const grammiPanetto = parseInt(document.getElementById('input-grammi-panetto').value);
+            const metodo = document.getElementById('select-metodo').value;
+            const lievitoTipo = document.getElementById('select-lievito').value;
+            const oreLievitazione = parseInt(document.getElementById('select-ore').value);
+            const usaOlio = document.getElementById('check-olio').checked;
+            const usaZucchero = document.getElementById('check-zucchero').checked;
+
+            document.getElementById('val-num-pizze').innerText = numPizze;
+            document.getElementById('val-grammi-panetto').innerText = grammiPanetto + 'g';
+
+            const data = styleData[currentStyle];
+            const idratazionePerc = data.idr;
+            const pesoTotale = numPizze * grammiPanetto;
+
+            // Calcolo proporzionale ingredienti (Farina + Acqua + Sale + Olio/Zucchero = 100%)
+            let percOlio = usaOlio ? 2 : 0;
+            let percZucchero = usaZucchero ? 1 : 0;
+            let percSale = data.sale;
+
+            let sommaFattori = 100 + idratazionePerc + percSale + percOlio + percZucchero;
+            let farina = (pesoTotale / sommaFattori) * 100;
+            let acqua = farina * (idratazionePerc / 100);
+            let sale = farina * (percSale / 100);
+            let olio = farina * (percOlio / 100);
+            let zucchero = farina * (percZucchero / 100);
+
+            // Calcolo lievito approssimativo in base a ore e temperatura ambiente (~20°C)
+            let lievitoGrammi = 0;
+            let unitLievitoText = "g";
+            if (lievitoTipo === 'fresco') {
+                if (oreLievitazione <= 8) lievitoGrammi = farina * 0.003; // ~3g per kg
+                else if (oreLievitazione <= 24) lievitoGrammi = farina * 0.0015; // ~1.5g
+                else lievitoGrammi = farina * 0.0008;
+                unitLievitoText = "g (Fresco)";
+            } else if (lievitoTipo === 'secco') {
+                if (oreLievitazione <= 8) lievitoGrammi = farina * 0.001;
+                else if (oreLievitazione <= 24) lievitoGrammi = farina * 0.0005;
+                else lievitoGrammi = farina * 0.0003;
+                unitLievitoText = "g (Secco)";
+            } else {
+                lievitoGrammi = farina * 0.08; // Li.Co.Re circa 8%
+                unitLievitoText = "g (Li.Co.Re)";
+            }
+
+            // Mostra / Nascondi colonne olio e zucchero
+            const boxOlio = document.getElementById('box-res-olio');
+            const boxZucchero = document.getElementById('box-res-zucchero');
+            if (usaOlio) boxOlio.classList.remove('hidden'); else boxOlio.classList.add('hidden');
+            if (usaZucchero) boxZucchero.classList.remove('hidden'); else boxZucchero.classList.add('hidden');
+
+            // Aggiorna UI Risultati
+            document.getElementById('res-farina').innerText = Math.round(farina);
+            document.getElementById('res-acqua').innerText = Math.round(acqua);
+            document.getElementById('res-sale').innerText = sale.toFixed(1);
+            document.getElementById('res-olio').innerText = olio.toFixed(1);
+            document.getElementById('res-zucchero').innerText = zucchero.toFixed(1);
+            document.getElementById('res-lievito').innerText = lievitoGrammi.toFixed(2);
+            document.getElementById('unit-lievito').innerText = unitLievitoText;
+            document.getElementById('res-totale').innerText = pesoTotale + ' g';
+            document.getElementById('res-idr-testo').innerText = idratazionePerc + '%';
+
+            // Aggiorna Info Forno
+            document.getElementById('display-style-title').innerText = data.name;
+            document.getElementById('display-style-desc').innerText = data.desc;
+            document.getElementById('target-cielo').innerText = data.cielo;
+            document.getElementById('target-platea').innerText = data.platea;
+            document.getElementById('target-tempo').innerText = data.tempo;
+
+            // Aggiorna Guida Passo-Passo Dinamica
+            document.getElementById('guide-style-name').innerText = data.name;
+            document.getElementById('guide-hours-text').innerText = oreLievitazione + ' Ore';
+            document.getElementById('guide-hours-badge').innerText = oreLievitazione + 'h';
+            document.getElementById('guide-weight-info').innerText = grammiPanetto + 'g';
+            document.getElementById('guide-badge-mode').innerText = data.badge;
+
+            let metodoTesto = metodo === 'planetaria' ? 'Planetaria (Kenwood XL)' : 'A mano (Tradizionale)';
+            document.getElementById('guide-metodo-text').innerText = metodoTesto;
+            document.getElementById('guide-step1-title').innerText = metodoTesto;
+
+            let step1HTML = "";
+            if (metodo === 'planetaria') {
+                step1HTML = `Usa il gancio impastatore della tua Kenwood XL. Versa l'acqua fredda nella ciotola, sciogli il lievito e unisci lo zucchero (se selezionato). Aggiungi l'80% della farina e avvia a velocità 1 per 3 minuti. Inserisci il sale, la farina restante e l'olio (se selezionato), portando a velocità 2-3 fino a completa incordatura (impasto liscio che si stacca dalle pareti).`;
+            } else {
+                step1HTML = `In una ciotola capiente sciogli il lievito nell'acqua con lo zucchero (se previsto). Aggiungi gradualmente la farina impastando energicamente con le mani. Unisci il sale e infine l'olio (se previsto). Rovescia sul piano di lavoro e impasta per 10-15 minuti fino a ottenere un panetto liscio ed elastico.`;
+            }
+
+            let step2HTML = "";
+            if (oreLievitazione === 8) {
+                step2HTML = `<strong>Puntata e Appretto a T.A. (~20°C):</strong> Fai riposare l'impasto in massa coperto per 2 ore. Successivamente, staglia e forma i panetti da <strong>${grammiPanetto}g</strong> e riponili in un contenitore ermetico o cassette per pizza per le restanti 6 ore fino al raddoppio.`;
+            } else if (oreLievitazione === 24) {
+                step2HTML = `<strong>Gestione Mista (2h TA + 22h Frigo):</strong> Lascia riposare l'impasto in massa a temperatura ambiente per 2 ore. Metti poi il contenitore in frigorifero (4°C) per 20 ore (maturazione). Il giorno della cottura, tira fuori l'impasto, forma i panetti da <strong>${grammiPanetto}g</strong> e lasciali lievitare a temperatura ambiente per le ultime 2 ore.`;
+            } else {
+                step2HTML = `<strong>Lievitazione Lenta Frigo (48h):</strong> Fai partire l'impasto a temperatura ambiente per 1 ora, poi trasferiscilo in frigorifero per 44 ore. Sfera e forma i panetti da <strong>${grammiPanetto}g</strong> e falli lievitare per le ultime 3 ore a temperatura ambiente prima dell'uso.`;
+            }
+
+            let step3HTML = `Preriscalda il forno elettrico impostando il <strong>Cielo a ${data.cielo}</strong> e la <strong>Platea a ${data.platea}</strong>. Seleziona il programma o gestisci manualmente la cottura. Inforna la pizza e cuoci per ${data.tempo}, controllando la doratura del cornicione.`;
+
+            document.getElementById('step-1-text').innerHTML = step1HTML;
+            document.getElementById('step-2-text').innerHTML = step2HTML;
+            document.getElementById('step-3-text').innerHTML = step3HTML;
+        }
+
+        function copyRecipe() {
+            const farina = document.getElementById('res-farina').innerText;
+            const acqua = document.getElementById('res-acqua').innerText;
+            const sale = document.getElementById('res-sale').innerText;
+            const olio = document.getElementById('res-olio').innerText;
+            const zucchero = document.getElementById('res-zucchero').innerText;
+            const lievito = document.getElementById('res-lievito').innerText;
+            const unitLievito = document.getElementById('unit-lievito').innerText;
+            const numPizze = document.getElementById('input-num-pizze').value;
+            const grammi = document.getElementById('input-grammi-panetto').value;
+
+            let text = `🍕 RICETTA MARCI'S VOLT PIZZA LAB\n`;
+            text += `Stile: ${styleData[currentStyle].name}\n`;
+            text += `Pezzi: ${numPizze} da ${grammi}g\n--------------------\n`;
+            text += `• Farina 00: ${farina}g\n`;
+            text += `• Acqua: ${acqua}g\n`;
+            text += `• Sale: ${sale}g\n`;
+            if(document.getElementById('check-olio').checked) text += `• Olio d'oliva: ${olio}g\n`;
+            if(document.getElementById('check-zucchero').checked) text += `• Zucchero: ${zucchero}g\n`;
+            text += `• Lievito: ${lievito} ${unitLievito}\n`;
+
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            alert('Ricetta copiata negli appunti!');
+        }
+
+        // Init al caricamento
+        window.onload = function() {
+            setStyle('napoletana');
+        };
+    </script>
+</body>
+</html>
