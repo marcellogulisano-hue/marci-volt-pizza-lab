@@ -1,0 +1,19 @@
+{
+  "name": "Marci's Volt Pizza Lab",
+  "short_name": "Volt Pizza Lab",
+  "description": "Calcolatore impasto e guida cottura per forno elettrico ad alta temperatura",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121212",
+  "theme_color": "#ff6b35",
+  "icons": [
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
