@@ -1,6 +1,6 @@
 {
   "name": "Marci's Volt Pizza Lab",
-  "short_name": "Volt Pizza Lab",
+  "short_name": "Marci's Volt Pizza Lab",
   "description": "Calcolatore impasto e guida cottura per forno elettrico ad alta temperatura",
   "start_url": "./index.html",
   "scope": "./",
