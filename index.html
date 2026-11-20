@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Marci's Volt Pizza Lab - Pizza & Focaccia Calculator</title>
+    
+    <!-- Configurazione PWA (Progressive Web App) -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Marci Volt Pizza Lab">
+    <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+    <link rel="apple-touch-icon" href="./icon-512.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#121212',
+                        cardbg: '#1e1e1e',
+                        accent: '#ff6b35',
+                        accenthover: '#e85a24',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Inter & Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-darkbg text-zinc-100 min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white">
+
+    <!-- Header -->
+    <header class="border-b border-zinc-800 bg-cardbg/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <img src="./icon-512.png" alt="Logo Volt Pizza Lab" class="w-10 h-10 rounded-xl shadow-lg shadow-accent/20 border border-accent/40 object-cover">
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        MARCI'S VOLT PIZZA LAB <span class="text-xs px-2 py-0.5 rounded-full bg-accent/20 text-accent font-medium">Pizza & Focaccia</span>
+                    </h1>
+                    <p class="text-xs text-zinc-400">Calcolatore smart per fornetto elettrico e forno di casa</p>
+                </div>
+            </div>
+            <!-- Navigation tabs -->
+            <div class="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+                <button onclick="switchTab('calculator')" id="tab-calculator-btn" class="px-4 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm">🧮 Calcolatore</button>
+                <button onclick="switchTab('guide-prep')" id="tab-guide-prep-btn" class="px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all">📋 Guida Passo-Passo</button>
+                <button onclick="switchTab('guide-volt')" id="tab-guide-volt-btn" class="px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all">🔥 Guida Forno</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- SECTION 1: CALCULATOR -->
+        <div id="section-calculator" class="space-y-8">
+            
+            <!-- Stili Pizza & Focaccia Selector -->
+            <div>
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-3">1. Seleziona lo stile di impasto</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="style-cards">
+                    <!-- Napoletana -->
+                    <div onclick="setStyle('napoletana')" id="card-napoletana" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-accent transition-all hover:border-accent/80 shadow-lg relative overflow-hidden group">
+                        <div class="h-24 w-full overflow-hidden relative">
+                            <img src="./img-napoletana.jpg" alt="Pizza Napoletana" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-accent text-white shadow">65% Idr.</span>
+                        </div>
+                        <div class="p-3.5">
+                            <h3 class="font-bold text-base text-white mb-0.5">Napoletana</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Cornicione pronunciato e cottura fulminea.</p>
+                        </div>
+                    </div>
+                    <!-- Romana in Teglia -->
+                    <div onclick="setStyle('romana')" id="card-romana" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group">
+                        <div class="h-24 w-full overflow-hidden relative">
+                            <img src="./img-romana.jpg" alt="Romana in Teglia" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-600 text-white shadow">80% Idr.</span>
+                        </div>
+                        <div class="p-3.5">
+                            <h3 class="font-bold text-base text-white mb-0.5">Romana in Teglia</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Alta idratazione, croccante sotto e soffice dentro.</p>
+                        </div>
+                    </div>
+                    <!-- Tonda Classica -->
+                    <div onclick="setStyle('pinsa')" id="card-pinsa" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group">
+                        <div class="h-24 w-full overflow-hidden relative">
+                            <img src="./img-pinsa.jpg" alt="Tonda Classica" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow">62% Idr.</span>
+                        </div>
+                        <div class="p-3.5">
+                            <h3 class="font-bold text-base text-white mb-0.5">Tonda Classica</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Sottile e croccante con olio EVO e zucchero.</p>
+                        </div>
+                    </div>
+                    <!-- Panuozzo -->
+                    <div onclick="setStyle('panuozzo')" id="card-panuozzo" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group">
+                        <div class="h-24 w-full overflow-hidden relative">
+                            <img src="./img-panuozzo.jpg" alt="Panuozzo di Gragnano" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-600 text-white shadow">68% Idr.</span>
+                        </div>
+                        <div class="p-3.5">
+                            <h3 class="font-bold text-base text-white mb-0.5">Panuozzo</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Formato allungato, cottura e farcitura doppia.</p>
+                        </div>
+                    </div>
+                    <!-- Focaccia Pugliese (Barese) -->
+                    <div onclick="setStyle('pugliese')" id="card-pugliese" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group">
+                        <div class="h-24 w-full overflow-hidden relative">
+                            <img src="./img-pugliese.jpg" alt="Focaccia Pugliese" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-600 text-white shadow">Semola + Patate</span>
+                        </div>
+                        <div class="p-3.5">
+                            <h3 class="font-bold text-base text-white mb-0.5">Focaccia Pugliese</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Barese con semola rimacinata, patata lessa e pomodorini.</p>
+                        </div>
+                    </div>
+                    <!-- Focaccia Ligure (Genovese con Lievitino) -->
+                    <div onclick="setStyle('ligure')" id="card-ligure" class="style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group">
+                        <div class="h-24 w-full overflow-hidden relative">
+                            <img src="./img-ligure.jpg" alt="Focaccia Ligure" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-600 text-white shadow">Lievitino + Salamoia</span>
+                        </div>
+                        <div class="p-3.5">
+                            <h3 class="font-bold text-base text-white mb-0.5">Focaccia Ligure</h3>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">Con lievitino notturno, fossette e salamoia lucida.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parametri di Configurazione -->
+            <div id="section-step-2" class="bg-cardbg p-6 rounded-2xl border border-zinc-800 shadow-lg space-y-6 scroll-mt-24">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">2. Parametri Impasto, Forno & Metodo</h2>
+                    
+                    <!-- Selettore Forno + Metodo Impasto -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2">Tipo di Forno</label>
+                            <div class="grid grid-cols-2 gap-2 bg-zinc-900 p-1 rounded-xl border border-zinc-700">
+                                <button type="button" id="btn-forno-elettrico" onclick="setForno('elettrico')" class="px-3 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm flex items-center justify-center gap-1.5">
+                                    <span>⚡</span> Fornetto Elettrico
+                                </button>
+                                <button type="button" id="btn-forno-cucina" onclick="setForno('cucina')" class="px-3 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-1.5">
+                                    <span>🏠</span> Forno Cucina
+                                </button>
+                            </div>
+                            <input type="hidden" id="select-forno" value="elettrico">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2">Metodo di Impasto</label>
+                            <div class="grid grid-cols-2 gap-2 bg-zinc-900 p-1 rounded-xl border border-zinc-700">
+                                <button type="button" id="btn-metodo-planetaria" onclick="setMetodo('planetaria')" class="px-3 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm flex items-center justify-center gap-1.5">
+                                    <span>⚙️</span> Planetaria
+                                </button>
+                                <button type="button" id="btn-metodo-mano" onclick="setMetodo('mano')" class="px-3 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-1.5">
+                                    <span>👐</span> A Mano
+                                </button>
+                            </div>
+                            <input type="hidden" id="select-metodo" value="planetaria">
+                        </div>
+                    </div>
+
+                    <!-- Slider Quantità & Peso -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 border-t border-zinc-800/80">
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2 flex justify-between">
+                                <span id="label-slider-pezzi">Numero panetti / teglie:</span>
+                                <span id="val-num-pizze" class="text-accent font-bold">4</span>
+                            </label>
+                            <input type="range" id="input-num-pizze" min="1" max="20" value="4" oninput="updateCalculation()" class="w-full accent-accent bg-zinc-800 h-2 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2 flex justify-between">
+                                <span id="label-slider-peso">Peso singolo pezzo:</span>
+                                <span id="val-grammi-panetto" class="text-accent font-bold">250g</span>
+                            </label>
+                            <input type="range" id="input-grammi-panetto" min="150" max="1200" step="10" value="250" oninput="updateCalculation()" class="w-full accent-accent bg-zinc-800 h-2 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Selettori Farina & Lievito -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 border-t border-zinc-800/80">
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2">Tipo di Farina</label>
+                            <select id="select-farina" onchange="updateCalculation()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-accent">
+                                <option value="caputo_pizzeria">Caputo Pizzeria (00 • W260-270 • 12,5% Prot.)</option>
+                                <option value="caputo_nuvola">Caputo Nuvola (0 • W260-280 • 13% Prot.)</option>
+                                <option value="caputo_cuoco">Caputo Cuoco / Saccorosso (00 • W300-320 • 13,5% Prot.)</option>
+                                <option value="molino_chiavazza">Il Molino Chiavazza Alta Forza (00 • W&gt;350 • 14,5% Prot.)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2">Tipo di Lievito</label>
+                            <select id="select-lievito" onchange="updateCalculation()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-accent">
+                                <option value="fresco">Lievito di Birra Fresco (LBF)</option>
+                                <option value="secco">Lievito di Birra Secco (LBS)</option>
+                                <option value="madre">Pasta Madre / Li.Co.Re.</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Ore Lievitazione & Checkbox Extra -->
+                    <div id="row-tempi-extra" class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 border-t border-zinc-800/80">
+                        <div id="box-select-ore">
+                            <label class="block text-sm font-medium text-zinc-300 mb-2">Gestione Tempi / Lievitazione</label>
+                            <select id="select-ore" onchange="updateCalculation()" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-accent">
+                                <option value="8">8 Ore (Diretto rapido)</option>
+                                <option value="24" selected>24 Ore (2h TA + 22h Frigo)</option>
+                                <option value="48">48 Ore (Lievitazione lenta frigo)</option>
+                            </select>
+                        </div>
+                        <div id="box-focaccia-timing-note" class="hidden flex items-center bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
+                            <p id="focaccia-timing-text" class="text-xs text-zinc-400 leading-relaxed"></p>
+                        </div>
+                        <div class="flex items-center justify-around pt-6 gap-2">
+                            <div class="flex items-center justify-between bg-zinc-900 p-3 rounded-xl border border-zinc-800 flex-1">
+                                <span id="label-check-olio" class="text-xs font-medium text-zinc-300">Olio EVO (2%)</span>
+                                <input type="checkbox" id="check-olio" onchange="updateCalculation()" class="w-4 h-4 accent-accent rounded cursor-pointer">
+                            </div>
+                            <div class="flex items-center justify-between bg-zinc-900 p-3 rounded-xl border border-zinc-800 flex-1">
+                                <span class="text-xs font-medium text-zinc-300">Zucchero (1%)</span>
+                                <input type="checkbox" id="check-zucchero" onchange="updateCalculation()" class="w-4 h-4 accent-accent rounded cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tasto Conferma Parametri Impasto -->
+                    <div class="pt-3 border-t border-zinc-800 flex justify-end">
+                        <button type="button" id="btn-confirm-step2" onclick="confirmStep2()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-accent hover:bg-accenthover text-white text-sm font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2">
+                            <span id="btn-confirm-step2-text">Conferma Parametri e Vai alle Farciture ↓</span>
+                        </button>
+                    </div>
+                </div>
+
+            <!-- SECTION 3: FARCITURE & CONDIMENTI MULTI-GUSTO (visibile per pizze e panuozzo) -->
+            <div id="section-toppings" class="bg-cardbg rounded-2xl border border-zinc-800 shadow-xl overflow-hidden scroll-mt-24">
+                <div class="p-6 border-b border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-zinc-400">3. Farciture & Condimenti (Multi-Gusto)</h2>
+                        <p class="text-xs text-zinc-400 mt-1">Distribuisci i gusti sulle pizze/teglie da preparare: le dosi dei condimenti si sommano automaticamente.</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button type="button" onclick="resetToppings()" class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 text-xs font-semibold transition-all">
+                            Azzera
+                        </button>
+                        <div id="toppings-counter-badge" class="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
+                            <span>✓ Pizze farcite: 4 / 4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista gusti selezionabili con contatore +/- -->
+                <div id="toppings-list" class="divide-y divide-zinc-800"></div>
+
+                <!-- Riepilogo aggregato ingredienti farcitura -->
+                <div class="bg-zinc-950/70 p-6 border-t border-zinc-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                        <h3 class="text-xs uppercase font-bold tracking-wider text-accent">🛒 Lista Condimenti Totali da Preparare</h3>
+                        <span class="text-[11px] text-zinc-500" id="toppings-raw-legend">🔥 In cottura • 🌿 A crudo a fine cottura</span>
+                    </div>
+                    <div id="toppings-summary-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs"></div>
+                    <div class="mt-5 pt-4 border-t border-zinc-800/80 flex justify-end">
+                        <button type="button" onclick="scrollToIngredients()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-accent hover:bg-accenthover text-white text-sm font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2">
+                            <span>Conferma Farciture e Vai al Riepilogo ↓</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Tabella dei Risultati in Tempo Reale -->
+            <div id="section-ingredients-summary" class="bg-cardbg rounded-2xl border border-zinc-800 shadow-xl overflow-hidden scroll-mt-24">
+                <div class="p-6 border-b border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white" id="ingredients-summary-title">4. Tabella Ingredienti Consigliati</h2>
+                        <p class="text-xs text-zinc-400" id="table-subtitle">Dosi calcolate automaticamente al grammo</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap w-full sm:w-auto justify-end">
+                        <button onclick="copyRecipe()" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-all flex items-center gap-2 border border-zinc-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                            Copia Ricetta
+                        </button>
+                        <button onclick="openGuidePrep()" class="px-4 py-2 rounded-xl bg-accent hover:bg-accenthover text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+                            <span>Apri Guida Passo-Passo →</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Griglia principale ingredienti -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-y lg:divide-y-0 divide-zinc-800 text-center">
+                    <div class="p-4">
+                        <span id="label-farina-main" class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Farina 00</span>
+                        <span id="res-farina" class="text-2xl font-extrabold text-white">0</span>
+                        <span class="text-zinc-400 text-xs ml-0.5">g</span>
+                    </div>
+                    <!-- Box extra per Semola (Focaccia Pugliese) -->
+                    <div class="p-4 hidden" id="box-res-semola">
+                        <span class="text-[11px] uppercase font-semibold text-amber-300 block mb-1">Semola Rimacinata</span>
+                        <span id="res-semola" class="text-2xl font-extrabold text-amber-300">0</span>
+                        <span class="text-amber-300 text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4">
+                        <span id="label-idratazione" class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Acqua</span>
+                        <span id="res-acqua" class="text-2xl font-extrabold text-accent">0</span>
+                        <span class="text-accent text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4">
+                        <span id="label-sale" class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Sale (2.5%)</span>
+                        <span id="res-sale" class="text-2xl font-extrabold text-white">0</span>
+                        <span class="text-zinc-400 text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4" id="box-res-olio">
+                        <span id="label-olio-box" class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Olio EVO (2%)</span>
+                        <span id="res-olio" class="text-2xl font-extrabold text-amber-400">0</span>
+                        <span class="text-amber-400 text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4" id="box-res-zucchero">
+                        <span class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Zucchero (1%)</span>
+                        <span id="res-zucchero" class="text-2xl font-extrabold text-amber-400">0</span>
+                        <span class="text-amber-400 text-xs ml-0.5">g</span>
+                    </div>
+                    <div class="p-4">
+                        <span id="label-lievito" class="text-[11px] uppercase font-semibold text-zinc-400 block mb-1">Lievito</span>
+                        <span id="res-lievito" class="text-2xl font-extrabold text-white">0</span>
+                        <span id="unit-lievito" class="text-zinc-400 text-xs ml-0.5">g</span>
+                    </div>
+                </div>
+
+                <!-- Box Secondario Specifico per Focaccia Pugliese o Focaccia Ligure -->
+                <div id="extra-recipe-details" class="hidden bg-zinc-950/80 p-5 border-t border-zinc-800">
+                    <h3 id="extra-details-title" class="text-xs uppercase font-bold tracking-wider text-accent mb-3">Dettagli Aggiuntivi</h3>
+                    <div id="extra-details-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs"></div>
+                </div>
+
+                <div class="bg-zinc-900/60 px-6 py-4 border-t border-zinc-800 flex flex-col sm:flex-row justify-between text-xs text-zinc-400 gap-2">
+                    <div>Peso totale impasto: <strong id="res-totale" class="text-white">0 g</strong></div>
+                    <div>Note idratazione/resa: <strong id="res-idr-testo" class="text-white">65%</strong></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECTION 2: GUIDA PASSO PASSO -->
+        <div id="section-guide-prep" class="hidden space-y-8">
+            <div class="bg-cardbg p-8 rounded-3xl border border-zinc-800 shadow-xl space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-800 pb-4 gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <span>📋 Guida Passo-Passo & Setup Forno</span>
+                        </h2>
+                        <p class="text-xs text-zinc-400 mt-1">Procedura ottimizzata per <span id="guide-style-name" class="text-accent font-semibold">Napoletana</span> • <span id="guide-forno-text" class="text-emerald-400 font-semibold">Fornetto Elettrico</span> • <span id="guide-farina-text" class="text-amber-400 font-semibold">Caputo Pizzeria</span> • <span id="guide-metodo-text" class="text-accent font-semibold">Planetaria (Kenwood XL)</span></p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-bold w-fit" id="guide-badge-mode">Programma Ufficiale</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="steps-container">
+                    <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 space-y-2">
+                        <div class="text-accent font-bold text-sm" id="title-step-1">Fase 1: Impasto</div>
+                        <div id="step-1-text" class="text-xs text-zinc-300 leading-relaxed space-y-2">Caricamento in corso...</div>
+                    </div>
+                    <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 space-y-2">
+                        <div class="text-accent font-bold text-sm" id="title-step-2">Fase 2: Lievitazione & Stesura</div>
+                        <div id="step-2-text" class="text-xs text-zinc-300 leading-relaxed space-y-2">Caricamento in corso...</div>
+                    </div>
+                    <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 space-y-2">
+                        <div class="text-accent font-bold text-sm" id="title-step-3">Fase 3: Cottura</div>
+                        <div id="step-3-text" class="text-xs text-zinc-300 leading-relaxed space-y-2">Caricamento in corso...</div>
+                    </div>
+                </div>
+
+                <!-- Riquadro Setup Forno spostato in fondo alla Guida Passo-Passo -->
+                <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 p-6 rounded-2xl border border-zinc-800 shadow-lg">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-zinc-800">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span id="badge-forno-header" class="text-xs uppercase font-bold tracking-wider text-accent">Setup Fornetto Elettrico</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            </div>
+                            <h3 id="display-style-title" class="font-bold text-lg text-white mt-0.5">Napoletana</h3>
+                        </div>
+                        <p id="display-style-desc" class="text-xs text-zinc-400 max-w-xl">Impostazioni predefinite consigliate per questo stile e tipo di forno.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-zinc-900/90 p-3.5 rounded-xl border border-zinc-800">
+                            <span class="text-[11px] text-zinc-400 block mb-1">Farina abbinata:</span>
+                            <span id="target-farina-badge" class="font-bold text-accent text-xs">Caputo Pizzeria</span>
+                        </div>
+                        <div class="bg-zinc-900/90 p-3.5 rounded-xl border border-zinc-800">
+                            <span id="label-temp-1" class="text-[11px] text-zinc-400 block mb-1">Temperatura Cielo:</span>
+                            <span id="target-cielo" class="font-bold text-amber-400 text-sm">450°C</span>
+                        </div>
+                        <div class="bg-zinc-900/90 p-3.5 rounded-xl border border-zinc-800">
+                            <span id="label-temp-2" class="text-[11px] text-zinc-400 block mb-1">Temperatura Platea:</span>
+                            <span id="target-platea" class="font-bold text-amber-400 text-sm">420°C</span>
+                        </div>
+                        <div class="bg-zinc-900/90 p-3.5 rounded-xl border border-zinc-800">
+                            <span class="text-[11px] text-zinc-400 block mb-1">Tempo di cottura:</span>
+                            <span id="target-tempo" class="font-bold text-white text-sm">~90 secondi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: FORNO GUIDE -->
+        <div id="section-guide-volt" class="hidden space-y-8">
+            <div class="bg-cardbg p-8 rounded-3xl border border-zinc-800 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+                <h2 class="text-2xl font-bold text-white mb-2">Guida Cottura: Fornetto Elettrico vs Forno di Casa</h2>
+                <p class="text-sm text-zinc-400 max-w-2xl mb-8">Consigli pratici per ottenere il massimo risultato sia con un fornetto ad alta temperatura (450°C) sia con un tradizionale forno da cucina (250°C).</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center text-accent font-bold">⚡</div>
+                            <h3 class="font-bold text-white text-base">Fornetto Elettrico (Ooni Volt / Effeuno)</h3>
+                        </div>
+                        <p class="text-xs text-zinc-400 leading-relaxed"><strong>Preriscaldamento:</strong> Accendi almeno 20–30 minuti prima per mandare in temperatura la pietra refrattaria.</p>
+                        <p class="text-xs text-zinc-400 leading-relaxed"><strong>Napoletana & Panuozzo:</strong> Sfrutta Cielo a 400–450°C e Platea a 380–420°C per una cottura esplosiva in 90 secondi.</p>
+                        <p class="text-xs text-zinc-400 leading-relaxed"><strong>Teglia & Focacce (Pugliese / Ligure):</strong> Abbassa Cielo a 250–280°C e Platea a 250–300°C (oppure usa il forno di casa per teglie grandi da 30×40 cm).</p>
+                    </div>
+                    <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">🏠</div>
+                            <h3 class="font-bold text-white text-base">Normale Forno da Cucina (Max 250°C)</h3>
+                        </div>
+                        <p class="text-xs text-zinc-400 leading-relaxed"><strong>Pizza al piatto a 250°C:</strong> Usa sempre Olio EVO (2%) e Zucchero/Malto (1%) nell'impasto per evitare che diventi pallida o secca. Cuoci sul ripiano più basso (o su pietra refrattaria/leccarda rovesciata rovente) prima solo con pomodoro per 6–7 minuti, poi aggiungi mozzarella e condimenti per gli ultimi 2–3 minuti.</p>
+                        <p class="text-xs text-zinc-400 leading-relaxed"><strong>Focaccia Pugliese & Ligure:</strong> Il forno di casa è perfetto! Ripiano basso a 250°C statico per la Pugliese (15–18 min) e ripiano centrale a 240°C ventilato o 230°C statico per la Ligure (15–18 min).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-zinc-800 py-6 text-center text-xs text-zinc-500">
+        <p>Marci's Volt Pizza Lab • Ottimizzato per la gestione avanzata dell'impasto e della cottura in casa.</p>
+    </footer>
+
+    <script>
+        let currentStyle = 'napoletana';
+        let toppingCounts = {};
+
+        const toppingsData = {
+            napoletana: [
+                // --- ROSSE ---
+                {
+                    id: 'margherita',
+                    name: 'Margherita Classica',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • Classica',
+                    desc: 'Pomodoro San Marzano, fior di latte asciutto, Parmigiano e basilico a crudo.',
+                    items: [
+                        { name: 'Pomodoro San Marzano schiacciato', qty: 80, unit: 'g', raw: false },
+                        { name: 'Fior di latte scolato', qty: 80, unit: 'g', raw: false },
+                        { name: 'Parmigiano Reggiano grattugiato', qty: 10, unit: 'g', raw: false },
+                        { name: 'Basilico fresco & Olio EVO', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                {
+                    id: 'norma',
+                    name: 'Alla Norma (Siciliana)',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • Tradizione',
+                    desc: 'Pomodoro, melanzane fritte e ricotta salata grattugiata a scaglie a fine cottura.',
+                    items: [
+                        { name: 'Pomodoro San Marzano schiacciato', qty: 80, unit: 'g', raw: false },
+                        { name: 'Fior di latte scolato', qty: 40, unit: 'g', raw: false },
+                        { name: 'Melanzane fritte a fette/cubetti', qty: 70, unit: 'g', raw: true },
+                        { name: 'Ricotta salata a scaglie & basilico', qty: 25, unit: 'g', raw: true }
+                    ]
+                },
+                {
+                    id: 'diavola',
+                    name: 'Diavola',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • Decisa',
+                    desc: 'Base Margherita con salame piccante e filo d\'olio EVO/piccante.',
+                    items: [
+                        { name: 'Pomodoro San Marzano schiacciato', qty: 80, unit: 'g', raw: false },
+                        { name: 'Fior di latte scolato', qty: 80, unit: 'g', raw: false },
+                        { name: 'Salame piccante a fette', qty: 35, unit: 'g', raw: false },
+                        { name: 'Olio EVO / piccante', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                {
+                    id: 'bufalina',
+                    name: 'Bufalina DOC',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • Gourmet',
+                    desc: 'Pomodoro San Marzano e mozzarella di bufala campana ben sgocciolata.',
+                    items: [
+                        { name: 'Pomodoro San Marzano schiacciato', qty: 80, unit: 'g', raw: false },
+                        { name: 'Mozzarella di Bufala Campana DOP', qty: 90, unit: 'g', raw: false },
+                        { name: 'Basilico fresco & Olio EVO', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                {
+                    id: 'genovese',
+                    name: 'Genovese',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • Gourmet',
+                    desc: 'Filetti di pomodoro San Marzano e provola affumicata in forno, completata a crudo con pesto di basilico e basilico fresco.',
+                    items: [
+                        { name: 'Filetti di pomodoro San Marzano', qty: 60, unit: 'g', raw: false },
+                        { name: 'Provola affumicata scolata', qty: 80, unit: 'g', raw: false },
+                        { name: 'Pesto di basilico genovese', qty: 25, unit: 'g', raw: true },
+                        { name: 'Basilico fresco & Olio EVO', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                // --- BIANCHE ---
+                {
+                    id: 'provola_pepe',
+                    name: 'Bianca Provola e Pepe',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Classica',
+                    desc: 'Provola affumicata di Agerola, Parmigiano, pepe nero macinato e basilico.',
+                    items: [
+                        { name: 'Provola affumicata scolata', qty: 85, unit: 'g', raw: false },
+                        { name: 'Parmigiano Reggiano grattugiato', qty: 15, unit: 'g', raw: false },
+                        { name: 'Pepe nero macinato, basilico & Olio EVO', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                {
+                    id: 'bronte',
+                    name: 'Bronte (Pistacchio & Mortadella)',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Gourmet',
+                    desc: 'Mozzarella/fior di latte in forno, poi pesto o crema di pistacchio, mortadella, stracciatella o burrata, granella di pistacchio e olio EVO.',
+                    items: [
+                        { name: 'Mozzarella / Fior di latte scolato', qty: 70, unit: 'g', raw: false },
+                        { name: 'Pesto o crema di pistacchio', qty: 25, unit: 'g', raw: true },
+                        { name: 'Mortadella Bologna IGP', qty: 45, unit: 'g', raw: true },
+                        { name: 'Stracciatella o burrata fresca', qty: 50, unit: 'g', raw: true },
+                        { name: 'Granella di pistacchio', qty: 12, unit: 'g', raw: true },
+                        { name: 'Olio EVO a crudo', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                {
+                    id: 'bra',
+                    name: 'Bra (Piemontese)',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Tradizione',
+                    desc: 'Provola e patate a lamelle sottili in forno, con salsiccia di Bra (a crudo o appena intiepidita), origano e olio EVO.',
+                    items: [
+                        { name: 'Provola scolata', qty: 80, unit: 'g', raw: false },
+                        { name: 'Patate a lamelle sottili', qty: 60, unit: 'g', raw: false },
+                        { name: 'Salsiccia di Bra', qty: 65, unit: 'g', raw: true },
+                        { name: 'Origano & Olio EVO', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                {
+                    id: 'porcina',
+                    name: 'Porcina',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Bosco',
+                    desc: 'Provolone, ricotta vaccina a ciuffi e funghi porcini in forno, rifinita con spolverata di pecorino, prezzemolo tritato e pepe nero.',
+                    items: [
+                        { name: 'Provolone a dadini o fette', qty: 65, unit: 'g', raw: false },
+                        { name: 'Ricotta vaccina scolata', qty: 45, unit: 'g', raw: false },
+                        { name: 'Funghi porcini a fettine/trifolati', qty: 60, unit: 'g', raw: false },
+                        { name: 'Spolverata di pecorino', qty: 15, unit: 'g', raw: true },
+                        { name: 'Prezzemolo tritato & pepe nero', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                }
+            ],
+            romana: [
+                // --- ROSSE ---
+                {
+                    id: 'margherita_teglia',
+                    name: 'Margherita in Teglia',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • Classica',
+                    desc: 'Polpa di pomodoro, mozzarella ben asciutta (aggiunta a metà cottura) e basilico.',
+                    items: [
+                        { name: 'Polpa di pomodoro condita', qty: 160, unit: 'g', raw: false },
+                        { name: 'Mozzarella asciutta per pizza', qty: 160, unit: 'g', raw: false },
+                        { name: 'Basilico fresco & Olio EVO', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                {
+                    id: 'rossa_forno',
+                    name: 'Rossa Classica da Forno',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • Semplice',
+                    desc: 'Passata di pomodoro condita, origano secco e olio EVO per croccantezza pura.',
+                    items: [
+                        { name: 'Passata di pomodoro condita', qty: 180, unit: 'g', raw: false },
+                        { name: 'Olio EVO (in cottura e a crudo)', qty: 15, unit: 'g', raw: false },
+                        { name: 'Origano secco', qty: 0, unit: 'q.b.', raw: false }
+                    ]
+                },
+                // --- BIANCHE ---
+                {
+                    id: 'mortadella_pistacchio',
+                    name: 'Mortadella, Stracciatella e Pistacchio',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • A crudo',
+                    desc: 'Base bianca croccante con olio EVO, farcita interamente a crudo fuori dal forno.',
+                    items: [
+                        { name: 'Mortadella Bologna IGP', qty: 120, unit: 'g', raw: true },
+                        { name: 'Stracciatella / Burrata fresca', qty: 120, unit: 'g', raw: true },
+                        { name: 'Granella di pistacchio', qty: 20, unit: 'g', raw: true }
+                    ]
+                },
+                {
+                    id: 'patate_rosmarino',
+                    name: 'Patate, Mozzarella e Rosmarino',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Tradizione',
+                    desc: 'Fettine sottilissime di patate a pasta gialla, mozzarella per pizza e rosmarino.',
+                    items: [
+                        { name: 'Patate a pasta gialla a lamelle', qty: 180, unit: 'g', raw: false },
+                        { name: 'Mozzarella asciutta per pizza', qty: 140, unit: 'g', raw: false },
+                        { name: 'Rosmarino fresco & Olio EVO', qty: 0, unit: 'q.b.', raw: false }
+                    ]
+                }
+            ],
+            pinsa: [
+                // --- ROSSE ---
+                {
+                    id: 'margherita_croccante',
+                    name: 'Margherita Croccante',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • Classica',
+                    desc: 'Polpa di pomodoro, mozzarella asciutta, origano o basilico e filo d\'olio EVO.',
+                    items: [
+                        { name: 'Polpa / Passata di pomodoro', qty: 75, unit: 'g', raw: false },
+                        { name: 'Mozzarella asciutta per pizza', qty: 75, unit: 'g', raw: false },
+                        { name: 'Basilico / Origano & Olio EVO', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                {
+                    id: 'capricciosa',
+                    name: 'Capricciosa',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • Ricca',
+                    desc: 'Pomodoro, mozzarella, prosciutto cotto, funghi champignon, carciofini e olive.',
+                    items: [
+                        { name: 'Polpa / Passata di pomodoro', qty: 75, unit: 'g', raw: false },
+                        { name: 'Mozzarella asciutta per pizza', qty: 70, unit: 'g', raw: false },
+                        { name: 'Prosciutto cotto', qty: 35, unit: 'g', raw: false },
+                        { name: 'Funghi champignon a fettine', qty: 35, unit: 'g', raw: false },
+                        { name: 'Carciofini sott\'olio', qty: 25, unit: 'g', raw: false },
+                        { name: 'Olive nere denocciolate', qty: 15, unit: 'g', raw: false }
+                    ]
+                },
+                {
+                    id: 'crudo_rucola',
+                    name: 'Prosciutto Crudo, Rucola e Grana',
+                    baseType: 'Rossa',
+                    tag: 'Rossa • A crudo',
+                    desc: 'Base Margherita in forno, completata fuori cottura con crudo, rucola e scaglie.',
+                    items: [
+                        { name: 'Polpa / Passata di pomodoro', qty: 75, unit: 'g', raw: false },
+                        { name: 'Mozzarella asciutta per pizza', qty: 70, unit: 'g', raw: false },
+                        { name: 'Prosciutto Crudo di Parma', qty: 45, unit: 'g', raw: true },
+                        { name: 'Rucola fresca', qty: 15, unit: 'g', raw: true },
+                        { name: 'Scaglie di Grana / Parmigiano', qty: 15, unit: 'g', raw: true }
+                    ]
+                },
+                // --- BIANCHE ---
+                {
+                    id: 'quattro_formaggi',
+                    name: 'Quattro Formaggi',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Cremosa',
+                    desc: 'Mix cremoso di mozzarella, Gorgonzola DOP, Fontina/Emmental e Parmigiano.',
+                    items: [
+                        { name: 'Mozzarella asciutta per pizza', qty: 55, unit: 'g', raw: false },
+                        { name: 'Gorgonzola DOP dolce', qty: 30, unit: 'g', raw: false },
+                        { name: 'Fontina o Emmental a cubetti', qty: 25, unit: 'g', raw: false },
+                        { name: 'Parmigiano Reggiano grattugiato', qty: 15, unit: 'g', raw: false }
+                    ]
+                }
+            ],
+            panuozzo: [
+                {
+                    id: 'pancetta_provola',
+                    name: 'Classico di Gragnano (Pancetta e Provola)',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Originale',
+                    desc: 'Provola affumicata e pancetta tesa sciolte nella seconda passata in forno.',
+                    items: [
+                        { name: 'Provola affumicata a fette', qty: 90, unit: 'g', raw: false },
+                        { name: 'Pancetta tesa o coppata', qty: 60, unit: 'g', raw: false },
+                        { name: 'Pepe nero & Olio EVO', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                },
+                {
+                    id: 'salsiccia_friarielli',
+                    name: 'Salsiccia e Friarielli',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Napoletano',
+                    desc: 'Salsiccia rosolata sbriciolata, friarielli saltati in padella e provola affumicata.',
+                    items: [
+                        { name: 'Salsiccia fresca rosolata', qty: 100, unit: 'g', raw: false },
+                        { name: 'Friarielli napoletani saltati', qty: 90, unit: 'g', raw: false },
+                        { name: 'Provola affumicata a fette', qty: 80, unit: 'g', raw: false }
+                    ]
+                },
+                {
+                    id: 'crudo_fior_rucola',
+                    name: 'Crudo, Fior di Latte e Rucola',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Fresco',
+                    desc: 'Fior di latte sciolto al calore e farcitura fresca a crudo con crudo, rucola e scaglie.',
+                    items: [
+                        { name: 'Fior di latte scolato', qty: 90, unit: 'g', raw: false },
+                        { name: 'Prosciutto Crudo', qty: 60, unit: 'g', raw: true },
+                        { name: 'Rucola fresca', qty: 20, unit: 'g', raw: true },
+                        { name: 'Scaglie di Parmigiano Reggiano', qty: 15, unit: 'g', raw: true }
+                    ]
+                },
+                {
+                    id: 'porchino',
+                    name: 'Porchino',
+                    baseType: 'Bianca',
+                    tag: 'Bianca • Rustico',
+                    desc: 'Porchetta arrosto, patate arrosto e provola a cubetti sciolti nella seconda passata in forno, con olio EVO.',
+                    items: [
+                        { name: 'Porchetta arrosto a fette', qty: 100, unit: 'g', raw: false },
+                        { name: 'Patate arrosto a spicchi/cubetti', qty: 80, unit: 'g', raw: false },
+                        { name: 'Provola affumicata a cubetti', qty: 80, unit: 'g', raw: false },
+                        { name: 'Olio EVO', qty: 0, unit: 'q.b.', raw: true }
+                    ]
+                }
+            ]
+        };
+
+        function initToppingsForStyle(styleKey) {
+            toppingCounts = {};
+            const list = toppingsData[styleKey];
+            if (!list) return;
+            const totalPieces = parseInt(document.getElementById('input-num-pizze').value, 10) || 1;
+            list.forEach((t, idx) => {
+                toppingCounts[t.id] = (idx === 0) ? totalPieces : 0;
+            });
+        }
+
+        function changeToppingCount(toppingId, delta) {
+            const list = toppingsData[currentStyle];
+            if (!list) return;
+            const totalPieces = parseInt(document.getElementById('input-num-pizze').value, 10) || 1;
+            const currentVal = Number(toppingCounts[toppingId] || 0);
+
+            if (delta > 0) {
+                if (currentVal >= totalPieces) return;
+                // Calcola somma attuale degli altri gusti
+                let otherSum = 0;
+                list.forEach(t => {
+                    if (t.id !== toppingId) otherSum += Number(toppingCounts[t.id] || 0);
+                });
+                // Se aggiungendo 1 superiamo totalPieces, scala 1 pezzo dal gusto con conteggio più alto tra gli altri
+                if (currentVal + 1 + otherSum > totalPieces) {
+                    let donor = null;
+                    let maxDonorVal = 0;
+                    list.forEach(t => {
+                        if (t.id !== toppingId) {
+                            const v = Number(toppingCounts[t.id] || 0);
+                            if (v > maxDonorVal) {
+                                maxDonorVal = v;
+                                donor = t.id;
+                            }
+                        }
+                    });
+                    if (donor) {
+                        toppingCounts[donor] = Math.max(0, Number(toppingCounts[donor] || 0) - 1);
+                    } else {
+                        return;
+                    }
+                }
+                toppingCounts[toppingId] = currentVal + 1;
+            } else if (delta < 0) {
+                if (currentVal <= 0) return;
+                toppingCounts[toppingId] = currentVal - 1;
+            }
+
+            updateCalculation();
+        }
+
+        function assignAllToTopping(toppingId) {
+            const list = toppingsData[currentStyle];
+            if (!list) return;
+            const totalPieces = parseInt(document.getElementById('input-num-pizze').value, 10) || 1;
+            list.forEach(t => {
+                toppingCounts[t.id] = (t.id === toppingId) ? totalPieces : 0;
+            });
+            updateCalculation();
+        }
+
+        function resetToppings() {
+            const list = toppingsData[currentStyle];
+            if (!list) return;
+            list.forEach(t => {
+                toppingCounts[t.id] = 0;
+            });
+            updateCalculation();
+        }
+
+        function confirmStep2() {
+            const isFocaccia = (currentStyle === 'pugliese' || currentStyle === 'ligure');
+            const targetId = isFocaccia ? 'section-ingredients-summary' : 'section-toppings';
+            const el = document.getElementById(targetId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function scrollToIngredients() {
+            const el = document.getElementById('section-ingredients-summary');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function openGuidePrep() {
+            switchTab('guide-prep');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderToppingsSection(totalPieces) {
+            const section = document.getElementById('section-toppings');
+            const list = toppingsData[currentStyle];
+            if (!list) {
+                section.classList.add('hidden');
+                return { hasRawFinish: false, totalAssigned: 0, aggregated: {} };
+            }
+            section.classList.remove('hidden');
+
+            list.forEach(t => {
+                if (typeof toppingCounts[t.id] !== 'number' || Number.isNaN(toppingCounts[t.id])) {
+                    toppingCounts[t.id] = 0;
+                }
+            });
+
+            // Se un solo gusto ha pezzi assegnati, mantienilo sincronizzato con lo slider totale pezzi
+            const activeToppings = list.filter(t => toppingCounts[t.id] > 0);
+            if (activeToppings.length === 1) {
+                toppingCounts[activeToppings[0].id] = totalPieces;
+            }
+
+            // Limita eventuali valori fuori range e riduci l'eccedenza se totalPieces è stato ridotto
+            let sum = 0;
+            list.forEach(t => {
+                if (toppingCounts[t.id] > totalPieces) toppingCounts[t.id] = totalPieces;
+                sum += toppingCounts[t.id];
+            });
+
+            if (sum > totalPieces) {
+                let excess = sum - totalPieces;
+                for (let i = list.length - 1; i >= 0 && excess > 0; i--) {
+                    const id = list[i].id;
+                    const take = Math.min(toppingCounts[id], excess);
+                    toppingCounts[id] -= take;
+                    excess -= take;
+                }
+                sum = totalPieces;
+            }
+
+            const badge = document.getElementById('toppings-counter-badge');
+            const unitLabel = currentStyle === 'romana' ? 'teglie' : (currentStyle === 'panuozzo' ? 'panuozzi' : 'pizze');
+            if (sum === totalPieces) {
+                badge.className = "px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2";
+                badge.innerHTML = `<span>✓ Tutte assegnate: ${sum} / ${totalPieces} ${unitLabel}</span>`;
+            } else {
+                const rem = totalPieces - sum;
+                badge.className = "px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-400 text-xs font-bold flex items-center gap-2";
+                badge.innerHTML = `<span>⚠️ Assegnate: ${sum} / ${totalPieces} ${unitLabel} (mancano ${rem})</span>`;
+            }
+
+            const listContainer = document.getElementById('toppings-list');
+            let rowsHTML = '';
+            const aggregated = {};
+            let hasRawFinish = false;
+
+            list.forEach(t => {
+                const count = toppingCounts[t.id] || 0;
+                const activeClass = count > 0 ? 'bg-zinc-900/70' : 'bg-transparent opacity-80 hover:opacity-100';
+                const tagColor = t.baseType === 'Rossa' ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' : 'bg-zinc-100/15 text-zinc-100 border-zinc-400/40';
+
+                rowsHTML += `
+                    <div class="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all ${activeClass}">
+                        <div class="space-y-1 max-w-xl">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-bold text-sm text-white">${t.name}</span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border ${tagColor}">${t.tag}</span>
+                            </div>
+                            <p class="text-xs text-zinc-400">${t.desc}</p>
+                        </div>
+                        <div class="flex items-center justify-between sm:justify-end gap-3">
+                            <button type="button" onclick="assignAllToTopping('${t.id}')" class="text-[11px] px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 transition-all">
+                                Tutte (${totalPieces})
+                            </button>
+                            <div class="flex items-center bg-zinc-950 border border-zinc-700 rounded-xl p-1">
+                                <button type="button" onclick="changeToppingCount('${t.id}', -1)" class="w-7 h-7 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-bold flex items-center justify-center transition-all">−</button>
+                                <span class="w-9 text-center text-sm font-extrabold ${count > 0 ? 'text-accent' : 'text-zinc-500'}">${count}</span>
+                                <button type="button" onclick="changeToppingCount('${t.id}', 1)" class="w-7 h-7 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-bold flex items-center justify-center transition-all">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (count > 0) {
+                    t.items.forEach(item => {
+                        if (item.raw) hasRawFinish = true;
+                        const key = `${item.name}__${item.raw ? 'raw' : 'cook'}`;
+                        if (!aggregated[key]) {
+                            aggregated[key] = {
+                                name: item.name,
+                                qty: 0,
+                                unit: item.unit,
+                                raw: item.raw
+                            };
+                        }
+                        if (item.unit === 'q.b.') {
+                            aggregated[key].qty = 0;
+                        } else {
+                            aggregated[key].qty += item.qty * count;
+                        }
+                    });
+                }
+            });
+
+            listContainer.innerHTML = rowsHTML;
+
+            const summaryGrid = document.getElementById('toppings-summary-grid');
+            const aggEntries = Object.values(aggregated);
+            if (aggEntries.length === 0) {
+                summaryGrid.innerHTML = `<div class="col-span-full text-xs text-zinc-500 italic">Seleziona almeno 1 gusto con i tasti + / − per calcolare le dosi dei condimenti.</div>`;
+            } else {
+                summaryGrid.innerHTML = aggEntries.map(item => {
+                    const qtyLabel = item.unit === 'q.b.' ? 'q.b.' : `${item.qty} ${item.unit}`;
+                    const badgeIcon = item.raw
+                        ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">🌿 A crudo</span>'
+                        : '<span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">🔥 In forno</span>';
+                    return `
+                        <div class="bg-zinc-900 p-3 rounded-xl border border-zinc-800 flex items-center justify-between gap-2">
+                            <div>
+                                <span class="text-zinc-200 font-medium block">${item.name}</span>
+                                <div class="mt-1">${badgeIcon}</div>
+                            </div>
+                            <strong class="text-white text-sm whitespace-nowrap">${qtyLabel}</strong>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            return { hasRawFinish, totalAssigned: sum, aggregated };
+        }
+
+        const flourData = {
+            caputo_pizzeria: {
+                name: 'Caputo Pizzeria',
+                shortLabel: 'Caputo Pizzeria (W260-270 • 12,5% Prot.)',
+                fullLabel: 'Caputo Pizzeria (Farina 00 • W260-270 • Proteine 12,5%)'
+            },
+            caputo_nuvola: {
+                name: 'Caputo Nuvola',
+                shortLabel: 'Caputo Nuvola (W260-280 • 13% Prot.)',
+                fullLabel: 'Caputo Nuvola (Tipo 0 • W260-280 • Proteine 13%)'
+            },
+            caputo_cuoco: {
+                name: 'Caputo Cuoco',
+                shortLabel: 'Caputo Cuoco (W300-320 • 13,5% Prot.)',
+                fullLabel: 'Caputo Cuoco / Saccorosso (Farina 00 • W300-320 • Proteine 13,5%)'
+            },
+            molino_chiavazza: {
+                name: 'Il Molino Chiavazza',
+                shortLabel: 'Molino Chiavazza (W>350 • 14,5% Prot.)',
+                fullLabel: 'Il Molino Chiavazza Alta Forza (Farina 00 • W>350 • Proteine 14,5%)'
+            }
+        };
+
+        const styleData = {
+            napoletana: {
+                name: 'Napoletana',
+                descElettrico: 'Cornicione pronunciato e cottura fulminea a 450°C. Impasto diretto puro senza grassi né zuccheri.',
+                descCucina: 'Adattata per forno di casa (250°C): olio e zucchero attivati per doratura e morbidezza, cottura in due tempi.',
+                idr: 65,
+                sale: 2.5,
+                cielo: '450°C',
+                platea: '420°C',
+                tempoElettrico: '~90 secondi',
+                tempCucina1: '250°C (Statico / Pietra)',
+                tempCucina2: 'Ripiano basso / Grill finale',
+                tempoCucina: '~8-10 min (6 min base + 3 min fior di latte)',
+                badgeElettrico: 'Programma Napoletana',
+                badgeCucina: 'Modalità Forno Casa 250°C',
+                defaultOlio: false,
+                defaultZucchero: false,
+                defaultFarina: 'caputo_pizzeria',
+                minNum: 1, maxNum: 12, defaultNum: 4,
+                minPeso: 200, maxPeso: 320, stepPeso: 10, defaultPeso: 250
+            },
+            romana: {
+                name: 'Romana in Teglia',
+                descElettrico: 'Alta idratazione, croccante sotto e soffice dentro. Farina ad alta forza per reggere 80% di acqua.',
+                descCucina: 'Perfetta nel forno di casa al massimo (250°C statico) sul ripiano più basso per una base croccante.',
+                idr: 80,
+                sale: 2.8,
+                cielo: '300°C',
+                platea: '320°C',
+                tempoElettrico: '~6-8 minuti',
+                tempCucina1: '250°C (Statico)',
+                tempCucina2: 'Ripiano più basso',
+                tempoCucina: '~12-15 minuti',
+                badgeElettrico: 'Modalità Teglia / Manuale',
+                badgeCucina: 'Teglia Forno Casa 250°C',
+                defaultOlio: true,
+                defaultZucchero: false,
+                defaultFarina: 'molino_chiavazza',
+                minNum: 1, maxNum: 4, defaultNum: 2,
+                minPeso: 400, maxPeso: 1000, stepPeso: 25, defaultPeso: 600
+            },
+            pinsa: {
+                name: 'Tonda Classica',
+                descElettrico: 'Sottile e croccante. Olio EVO e zucchero favoriscono friabilità e doratura.',
+                descCucina: 'Ideale per forno di casa a 250°C: stesura sottile e doratura uniforme grazie a olio e zucchero.',
+                idr: 62,
+                sale: 2.5,
+                cielo: '380°C',
+                platea: '350°C',
+                tempoElettrico: '~3-4 minuti',
+                tempCucina1: '250°C (Statico o Ventilato)',
+                tempCucina2: 'Ripiano medio-basso',
+                tempoCucina: '~8-10 minuti',
+                badgeElettrico: 'Programma Classico',
+                badgeCucina: 'Tonda Forno Casa 250°C',
+                defaultOlio: true,
+                defaultZucchero: true,
+                defaultFarina: 'caputo_pizzeria',
+                minNum: 1, maxNum: 12, defaultNum: 4,
+                minPeso: 180, maxPeso: 300, stepPeso: 10, defaultPeso: 230
+            },
+            panuozzo: {
+                name: 'Panuozzo',
+                descElettrico: 'Formato allungato, cottura e farcitura doppia. Farina ricca di amidi fermentabili per massima alveolatura.',
+                descCucina: 'Cottura a 240-250°C in due fasi (prima il pane vuoto, poi ripassato dopo la farcitura).',
+                idr: 68,
+                sale: 2.5,
+                cielo: '400°C',
+                platea: '380°C',
+                tempoElettrico: '~3-5 minuti (2 cotture)',
+                tempCucina1: '240-250°C (Statico)',
+                tempCucina2: 'Ripiano centrale',
+                tempoCucina: '~10 min + 3 min post-farcitura',
+                badgeElettrico: 'Programma Panuozzo',
+                badgeCucina: 'Panuozzo Forno Casa',
+                defaultOlio: true,
+                defaultZucchero: false,
+                defaultFarina: 'caputo_nuvola',
+                minNum: 1, maxNum: 12, defaultNum: 4,
+                minPeso: 220, maxPeso: 350, stepPeso: 10, defaultPeso: 280
+            },
+            pugliese: {
+                name: 'Focaccia Pugliese',
+                descElettrico: 'Ricetta Barese (60% Farina 00 + 40% Semola rimacinata + patata lessa). Abbassa Cielo/Platea a 250°C.',
+                descCucina: 'Ricetta Barese originale per teglia tonda Ø 30 cm: ripiano più basso a 250°C statico per base croccante.',
+                idr: 64,
+                sale: 2.4,
+                cielo: '250°C',
+                platea: '260°C',
+                tempoElettrico: '~14-16 minuti',
+                tempCucina1: '250°C (Statico)',
+                tempCucina2: 'Ripiano più basso',
+                tempoCucina: '~15-18 minuti per teglia',
+                badgeElettrico: 'Teglia Ø 30 cm • 250°C',
+                badgeCucina: 'Teglia Ø 30 cm • Statico 250°C',
+                defaultOlio: true,
+                defaultZucchero: false,
+                defaultFarina: 'caputo_pizzeria',
+                minNum: 1, maxNum: 4, defaultNum: 2,
+                minPeso: 400, maxPeso: 700, stepPeso: 25, defaultPeso: 500
+            },
+            ligure: {
+                name: 'Focaccia Ligure',
+                descElettrico: 'Con lievitino notturno (12h frigo) e salamoia. Ideale in leccarda 30×40 cm a 230-240°C.',
+                descCucina: 'Con lievitino notturno (12h frigo) e salamoia in leccarda 30×40 cm: 240°C ventilato (o 230°C statico).',
+                idr: 63,
+                sale: 2.25,
+                cielo: '240°C',
+                platea: '240°C',
+                tempoElettrico: '~14-16 minuti',
+                tempCucina1: '240°C Ventilato (230°C Statico)',
+                tempCucina2: 'Ripiano centrale',
+                tempoCucina: '~15 min ventilato (17-18 min statico)',
+                badgeElettrico: 'Leccarda 30×40 • Lievitino',
+                badgeCucina: 'Leccarda 30×40 • 240°C',
+                defaultOlio: true,
+                defaultZucchero: false,
+                defaultFarina: 'caputo_cuoco',
+                minNum: 1, maxNum: 4, defaultNum: 1,
+                minPeso: 700, maxPeso: 1300, stepPeso: 50, defaultPeso: 1000
+            }
+        };
+
+        function switchTab(tabId) {
+            document.getElementById('section-calculator').classList.add('hidden');
+            document.getElementById('section-guide-prep').classList.add('hidden');
+            document.getElementById('section-guide-volt').classList.add('hidden');
+
+            document.getElementById('tab-calculator-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all";
+            document.getElementById('tab-guide-prep-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all";
+            document.getElementById('tab-guide-volt-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all";
+
+            if (tabId === 'calculator') {
+                document.getElementById('section-calculator').classList.remove('hidden');
+                document.getElementById('tab-calculator-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm";
+            } else if (tabId === 'guide-prep') {
+                document.getElementById('section-guide-prep').classList.remove('hidden');
+                document.getElementById('tab-guide-prep-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm";
+            } else if (tabId === 'guide-volt') {
+                document.getElementById('section-guide-volt').classList.remove('hidden');
+                document.getElementById('tab-guide-volt-btn').className = "px-4 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm";
+            }
+        }
+
+        function setForno(fornoKey) {
+            document.getElementById('select-forno').value = fornoKey;
+            const btnElettrico = document.getElementById('btn-forno-elettrico');
+            const btnCucina = document.getElementById('btn-forno-cucina');
+
+            if (fornoKey === 'elettrico') {
+                btnElettrico.className = "px-3 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm flex items-center justify-center gap-1.5";
+                btnCucina.className = "px-3 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-1.5";
+            } else {
+                btnCucina.className = "px-3 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm flex items-center justify-center gap-1.5";
+                btnElettrico.className = "px-3 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-1.5";
+            }
+
+            // Se si passa a Forno Cucina sulla Napoletana, attiva olio e zucchero per aiutare la doratura a 250°C
+            if (currentStyle === 'napoletana') {
+                if (fornoKey === 'cucina') {
+                    document.getElementById('check-olio').checked = true;
+                    document.getElementById('check-zucchero').checked = true;
+                } else {
+                    document.getElementById('check-olio').checked = false;
+                    document.getElementById('check-zucchero').checked = false;
+                }
+            }
+
+            updateCalculation();
+        }
+
+        function setMetodo(metodoKey) {
+            document.getElementById('select-metodo').value = metodoKey;
+            const btnPlanetaria = document.getElementById('btn-metodo-planetaria');
+            const btnMano = document.getElementById('btn-metodo-mano');
+
+            if (metodoKey === 'planetaria') {
+                btnPlanetaria.className = "px-3 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm flex items-center justify-center gap-1.5";
+                btnMano.className = "px-3 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-1.5";
+            } else {
+                btnMano.className = "px-3 py-2 text-xs font-semibold rounded-lg bg-accent text-white transition-all shadow-sm flex items-center justify-center gap-1.5";
+                btnPlanetaria.className = "px-3 py-2 text-xs font-semibold rounded-lg text-zinc-400 hover:text-white transition-all flex items-center justify-center gap-1.5";
+            }
+
+            updateCalculation();
+        }
+
+        function setStyle(styleKey, shouldScroll = true) {
+            currentStyle = styleKey;
+            ['napoletana', 'romana', 'pinsa', 'panuozzo', 'pugliese', 'ligure'].forEach(s => {
+                const card = document.getElementById(`card-${s}`);
+                if (s === styleKey) {
+                    card.className = "style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-accent transition-all hover:border-accent/80 shadow-lg relative overflow-hidden group";
+                } else {
+                    card.className = "style-card cursor-pointer rounded-2xl bg-cardbg border-2 border-zinc-800 transition-all hover:border-zinc-700 shadow-lg relative overflow-hidden group";
+                }
+            });
+
+            const data = styleData[styleKey];
+            const forno = document.getElementById('select-forno').value;
+
+            // Aggiorna range (min, max, step) e valore di default degli slider per lo stile scelto
+            const sliderPezzi = document.getElementById('input-num-pizze');
+            const sliderPeso = document.getElementById('input-grammi-panetto');
+            sliderPezzi.min = data.minNum;
+            sliderPezzi.max = data.maxNum;
+            sliderPezzi.value = data.defaultNum;
+
+            sliderPeso.min = data.minPeso;
+            sliderPeso.max = data.maxPeso;
+            sliderPeso.step = data.stepPeso;
+            sliderPeso.value = data.defaultPeso;
+
+            if (styleKey === 'napoletana' && forno === 'cucina') {
+                document.getElementById('check-olio').checked = true;
+                document.getElementById('check-zucchero').checked = true;
+            } else {
+                document.getElementById('check-olio').checked = data.defaultOlio;
+                document.getElementById('check-zucchero').checked = data.defaultZucchero;
+            }
+            document.getElementById('select-farina').value = data.defaultFarina;
+
+            initToppingsForStyle(styleKey);
+            updateCalculation();
+
+            if (shouldScroll) {
+                const step2El = document.getElementById('section-step-2');
+                if (step2El) {
+                    step2El.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+
+        function updateCalculation() {
+            const numPizze = parseInt(document.getElementById('input-num-pizze').value);
+            const grammiPanetto = parseInt(document.getElementById('input-grammi-panetto').value);
+            const farinaKey = document.getElementById('select-farina').value;
+            const forno = document.getElementById('select-forno').value;
+            const metodo = document.getElementById('select-metodo').value;
+            const lievitoTipo = document.getElementById('select-lievito').value;
+            const oreLievitazione = parseInt(document.getElementById('select-ore').value);
+            const usaOlio = document.getElementById('check-olio').checked;
+            const usaZucchero = document.getElementById('check-zucchero').checked;
+
+            const data = styleData[currentStyle];
+
+            const boxSelectOre = document.getElementById('box-select-ore');
+            const boxFocacciaNote = document.getElementById('box-focaccia-timing-note');
+            const focacciaTimingText = document.getElementById('focaccia-timing-text');
+            const isFocaccia = (currentStyle === 'pugliese' || currentStyle === 'ligure');
+
+            const btnStep2Text = document.getElementById('btn-confirm-step2-text');
+            const summaryTitle = document.getElementById('ingredients-summary-title');
+
+            if (isFocaccia) {
+                boxSelectOre.classList.add('hidden');
+                boxFocacciaNote.classList.remove('hidden');
+                if (btnStep2Text) btnStep2Text.innerText = 'Conferma Parametri e Vedi Dosi Impasto ↓';
+                if (summaryTitle) summaryTitle.innerText = '3. Tabella Ingredienti Consigliati';
+                if (currentStyle === 'ligure') {
+                    focacciaTimingText.innerHTML = '🌙 <strong class="text-teal-400">Tempi dedicati Ligure:</strong> lievitino 12h in frigo la sera prima + puntate/lievitazioni in leccarda e con salamoia indicate nella <strong>Guida Passo-Passo</strong>.';
+                } else {
+                    focacciaTimingText.innerHTML = '🍅 <strong class="text-rose-400">Tempi dedicati Pugliese:</strong> 2h di lievitazione delle palline + 30 min dopo la farcitura con pomodorini e olive indicati nella <strong>Guida Passo-Passo</strong>.';
+                }
+            } else {
+                boxSelectOre.classList.remove('hidden');
+                boxFocacciaNote.classList.add('hidden');
+                if (btnStep2Text) btnStep2Text.innerText = 'Conferma Parametri e Vai alle Farciture ↓';
+                if (summaryTitle) summaryTitle.innerText = '4. Tabella Ingredienti Consigliati';
+            }
+
+            const selectedFlour = flourData[farinaKey];
+
+            // Aggiorna etichette slider contestuali
+            if (currentStyle === 'pugliese') {
+                document.getElementById('label-slider-pezzi').innerText = 'Numero teglie tonde (Ø 30 cm):';
+                document.getElementById('label-slider-peso').innerText = 'Peso impasto per teglia:';
+            } else if (currentStyle === 'ligure') {
+                document.getElementById('label-slider-pezzi').innerText = 'Numero leccarde (30×40 cm):';
+                document.getElementById('label-slider-peso').innerText = 'Peso impasto per leccarda:';
+            } else if (currentStyle === 'romana') {
+                document.getElementById('label-slider-pezzi').innerText = 'Numero teglie / panetti:';
+                document.getElementById('label-slider-peso').innerText = 'Peso singolo panetto:';
+            } else {
+                document.getElementById('label-slider-pezzi').innerText = 'Numero panetti / pezzi:';
+                document.getElementById('label-slider-peso').innerText = 'Peso singolo pezzo:';
+            }
+
+            document.getElementById('val-num-pizze').innerText = numPizze;
+            document.getElementById('val-grammi-panetto').innerText = grammiPanetto + 'g';
+
+            const pesoTotale = numPizze * grammiPanetto;
+
+            // Variabili di calcolo
+            let farinaRound = 0;
+            let semolaRound = 0;
+            let acquaRound = 0;
+            let saleText = "0";
+            let olioText = "0";
+            let zuccheroText = "0";
+            let lievitoGrammi = 0;
+            let unitLievitoText = "g";
+
+            // Elementi UI condizionali
+            const boxSemola = document.getElementById('box-res-semola');
+            const boxOlio = document.getElementById('box-res-olio');
+            const boxZucchero = document.getElementById('box-res-zucchero');
+            const extraDetails = document.getElementById('extra-recipe-details');
+            const extraTitle = document.getElementById('extra-details-title');
+            const extraGrid = document.getElementById('extra-details-grid');
+
+            // Variabili specifiche Pugliese & Ligure
+            let pugliesePatate = 0, pugliesePomodorini = 0, puglieseOlive = 0;
+            let ligureLievitinoFarina = 0, ligureLievitinoAcqua = 0, ligureLievitinoLievito = 0;
+            let ligureImpastoFarina = 0, ligureImpastoAcqua = 0, ligureImpastoLievito = 0;
+            let ligureSalamoiaAcqua = 0, ligureSalamoiaOlio = 0, ligureSalamoiaSale = 0;
+
+            if (currentStyle === 'pugliese') {
+                // Proporzioni ricetta Barese:
+                // Base 1000g impasto = 300g Farina 00 (30%) + 200g Semola (20%) + 320g Acqua (32%) + 140g Patate (14%) + 30g Olio (3%) + 12g Sale (1.2%)
+                // Totale farina+semola = 50% del peso totale (60% Farina 00, 40% Semola)
+                const scale = pesoTotale / 1000;
+                farinaRound = Math.round(300 * scale);
+                semolaRound = Math.round(200 * scale);
+                const totFarine = farinaRound + semolaRound;
+                acquaRound = Math.round(320 * scale);
+                pugliesePatate = Math.round(140 * scale);
+                const olioVal = usaOlio ? (30 * scale) : 0;
+                const zuccheroVal = usaZucchero ? (totFarine * 0.01) : 0;
+                const saleVal = 12 * scale;
+
+                saleText = saleVal.toFixed(1);
+                olioText = olioVal.toFixed(1);
+                zuccheroText = zuccheroVal.toFixed(1);
+
+                if (lievitoTipo === 'fresco') {
+                    lievitoGrammi = 10 * scale;
+                    unitLievitoText = "g (Fresco)";
+                } else if (lievitoTipo === 'secco') {
+                    lievitoGrammi = 3.5 * scale;
+                    unitLievitoText = "g (Secco)";
+                } else {
+                    lievitoGrammi = totFarine * 0.08;
+                    unitLievitoText = "g (Li.Co.Re)";
+                }
+
+                // Farcitura Barese (base 1000g = 500g pomodorini, 20 olive)
+                pugliesePomodorini = Math.round(500 * scale);
+                puglieseOlive = Math.max(4, Math.round(20 * scale));
+
+                document.getElementById('label-farina-main').innerText = 'Farina 00 (60%)';
+                document.getElementById('label-sale').innerText = 'Sale (2.4%)';
+                document.getElementById('label-olio-box').innerText = 'Olio EVO (6%)';
+                document.getElementById('label-check-olio').innerText = 'Olio EVO (30g/kg)';
+
+                boxSemola.classList.remove('hidden');
+                if (usaOlio) boxOlio.classList.remove('hidden'); else boxOlio.classList.add('hidden');
+                if (usaZucchero) boxZucchero.classList.remove('hidden'); else boxZucchero.classList.add('hidden');
+
+                extraDetails.classList.remove('hidden');
+                extraTitle.innerText = `🥔 Patate nell'Impasto & 🍅 Farcitura Barese Consigliata`;
+                extraGrid.innerHTML = `
+                    <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-400 block mb-1">Patate lesse (peso crudo con buccia):</span>
+                        <strong class="text-amber-400 text-base">${pugliesePatate} g</strong>
+                        <span class="text-[11px] text-zinc-500 block mt-0.5">A pasta gialla, lesse e schiacciate</span>
+                    </div>
+                    <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-400 block mb-1">Pomodorini ciliegino:</span>
+                        <strong class="text-rose-400 text-base">${pugliesePomodorini} g</strong>
+                        <span class="text-[11px] text-zinc-500 block mt-0.5">Tagliati a metà e schiacciati sull'impasto</span>
+                    </div>
+                    <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-400 block mb-1">Olive baresane + Origano:</span>
+                        <strong class="text-white text-base">${puglieseOlive} olive + origano q.b.</strong>
+                        <span class="text-[11px] text-zinc-500 block mt-0.5">Con nocciolo in salamoia + filo d'olio EVO</span>
+                    </div>
+                `;
+                document.getElementById('res-idr-testo').innerText = '64% acqua + 28% patate lesse (sofficità 48h)';
+
+            } else if (currentStyle === 'ligure') {
+                // Proporzioni ricetta Focaccia Ligure con Lievitino (1 leccarda 30x40 cm = 1000g impasto base):
+                // Lievitino: 120g Farina + 70g Acqua + 1g lievito secco (o 3g fresco)
+                // Impasto principale: 500g Farina + 320g Acqua + 30g Olio EVO + 14g Sale + 4g lievito secco (o 12g fresco)
+                // Totale farina = 620g, Totale acqua = 390g (62.9% idr.)
+                const scale = pesoTotale / 1000;
+                ligureLievitinoFarina = Math.round(120 * scale);
+                ligureLievitinoAcqua = Math.round(70 * scale);
+                ligureImpastoFarina = Math.round(500 * scale);
+                ligureImpastoAcqua = Math.round(320 * scale);
+
+                farinaRound = ligureLievitinoFarina + ligureImpastoFarina;
+                acquaRound = ligureLievitinoAcqua + ligureImpastoAcqua;
+
+                const olioVal = usaOlio ? (30 * scale) : 0;
+                const zuccheroVal = usaZucchero ? (farinaRound * 0.01) : 0;
+                const saleVal = 14 * scale;
+
+                saleText = saleVal.toFixed(1);
+                olioText = olioVal.toFixed(1);
+                zuccheroText = zuccheroVal.toFixed(1);
+
+                if (lievitoTipo === 'fresco') {
+                    ligureLievitinoLievito = +(3 * scale).toFixed(1);
+                    ligureImpastoLievito = +(12 * scale).toFixed(1);
+                    lievitoGrammi = ligureLievitinoLievito + ligureImpastoLievito;
+                    unitLievitoText = "g (Fresco tot.)";
+                } else if (lievitoTipo === 'secco') {
+                    ligureLievitinoLievito = +(1 * scale).toFixed(1);
+                    ligureImpastoLievito = +(4 * scale).toFixed(1);
+                    lievitoGrammi = ligureLievitinoLievito + ligureImpastoLievito;
+                    unitLievitoText = "g (Secco tot.)";
+                } else {
+                    ligureLievitinoLievito = Math.round(15 * scale);
+                    ligureImpastoLievito = Math.round(45 * scale);
+                    lievitoGrammi = ligureLievitinoLievito + ligureImpastoLievito;
+                    unitLievitoText = "g (Li.Co.Re tot.)";
+                }
+
+                // Salamoia (base 1 leccarda: 90g acqua tiepida + 45g olio EVO + 15g sale)
+                ligureSalamoiaAcqua = Math.round(90 * scale);
+                ligureSalamoiaOlio = Math.round(45 * scale);
+                ligureSalamoiaSale = +(15 * scale).toFixed(1);
+
+                document.getElementById('label-farina-main').innerText = 'Farina Totale';
+                document.getElementById('label-sale').innerText = 'Sale Impasto';
+                document.getElementById('label-olio-box').innerText = 'Olio Impasto';
+                document.getElementById('label-check-olio').innerText = 'Olio Impasto (30g)';
+
+                boxSemola.classList.add('hidden');
+                if (usaOlio) boxOlio.classList.remove('hidden'); else boxOlio.classList.add('hidden');
+                if (usaZucchero) boxZucchero.classList.remove('hidden'); else boxZucchero.classList.add('hidden');
+
+                extraDetails.classList.remove('hidden');
+                extraTitle.innerText = '🌙 Suddivisione Lievitino (Sera Prima) & 💧 Salamoia Superficiale';
+                extraGrid.innerHTML = `
+                    <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-400 block mb-1">1. Per il Lievitino (12h in frigo):</span>
+                        <strong class="text-teal-400 block">${ligureLievitinoFarina}g farina + ${ligureLievitinoAcqua}g acqua + ${ligureLievitinoLievito}g lievito</strong>
+                        <span class="text-[11px] text-zinc-500 block mt-0.5">Da preparare la sera prima</span>
+                    </div>
+                    <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-400 block mb-1">2. Per l'Impasto al Mattino (+ lievitino):</span>
+                        <strong class="text-white block">${ligureImpastoFarina}g farina + ${ligureImpastoAcqua}g acqua + ${ligureImpastoLievito}g lievito</strong>
+                        <span class="text-[11px] text-zinc-500 block mt-0.5">+ ${olioText}g olio EVO e ${saleText}g sale</span>
+                    </div>
+                    <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-400 block mb-1">3. Per la Salamoia (nelle fossette):</span>
+                        <strong class="text-amber-400 block">${ligureSalamoiaAcqua}g acqua tiepida + ${ligureSalamoiaOlio}g olio EVO + ${ligureSalamoiaSale}g sale</strong>
+                        <span class="text-[11px] text-zinc-500 block mt-0.5">+ olio EVO q.b. per lucidare a fine cottura</span>
+                    </div>
+                `;
+                document.getElementById('res-idr-testo').innerText = `63% nell'impasto + salamoia superficiale`;
+
+            } else {
+                // Stili standard: Napoletana, Romana, Tonda Classica, Panuozzo
+                const idratazionePerc = data.idr;
+                let percOlio = usaOlio ? 2 : 0;
+                let percZucchero = usaZucchero ? 1 : 0;
+                let percSale = data.sale;
+
+                let sommaFattori = 100 + idratazionePerc + percSale + percOlio + percZucchero;
+                let farina = (pesoTotale / sommaFattori) * 100;
+                let acqua = farina * (idratazionePerc / 100);
+                let sale = farina * (percSale / 100);
+                let olio = farina * (percOlio / 100);
+                let zucchero = farina * (percZucchero / 100);
+
+                farinaRound = Math.round(farina);
+                acquaRound = Math.round(acqua);
+                saleText = sale.toFixed(1);
+                olioText = olio.toFixed(1);
+                zuccheroText = zucchero.toFixed(1);
+
+                if (lievitoTipo === 'fresco') {
+                    if (oreLievitazione <= 8) lievitoGrammi = farina * 0.003;
+                    else if (oreLievitazione <= 24) lievitoGrammi = farina * 0.0015;
+                    else lievitoGrammi = farina * 0.0008;
+                    unitLievitoText = "g (Fresco)";
+                } else if (lievitoTipo === 'secco') {
+                    if (oreLievitazione <= 8) lievitoGrammi = farina * 0.001;
+                    else if (oreLievitazione <= 24) lievitoGrammi = farina * 0.0005;
+                    else lievitoGrammi = farina * 0.0003;
+                    unitLievitoText = "g (Secco)";
+                } else {
+                    lievitoGrammi = farina * 0.08;
+                    unitLievitoText = "g (Li.Co.Re)";
+                }
+
+                document.getElementById('label-farina-main').innerText = 'Farina 00';
+                document.getElementById('label-sale').innerText = `Sale (${data.sale}%)`;
+                document.getElementById('label-olio-box').innerText = 'Olio EVO (2%)';
+                document.getElementById('label-check-olio').innerText = 'Olio EVO (2%)';
+
+                boxSemola.classList.add('hidden');
+                extraDetails.classList.add('hidden');
+                if (usaOlio) boxOlio.classList.remove('hidden'); else boxOlio.classList.add('hidden');
+                if (usaZucchero) boxZucchero.classList.remove('hidden'); else boxZucchero.classList.add('hidden');
+
+                document.getElementById('res-idr-testo').innerText = idratazionePerc + '%';
+            }
+
+            // Popolamento celle tabella
+            document.getElementById('res-farina').innerText = farinaRound;
+            document.getElementById('res-semola').innerText = semolaRound;
+            document.getElementById('res-acqua').innerText = acquaRound;
+            document.getElementById('res-sale').innerText = saleText;
+            document.getElementById('res-olio').innerText = olioText;
+            document.getElementById('res-zucchero').innerText = zuccheroText;
+            document.getElementById('res-lievito').innerText = lievitoGrammi.toFixed(2).replace(/\.00$/, '');
+            document.getElementById('unit-lievito').innerText = unitLievitoText;
+            document.getElementById('res-totale').innerText = pesoTotale + ' g';
+
+            // Aggiornamento card Setup Forno
+            document.getElementById('display-style-title').innerText = data.name;
+            document.getElementById('target-farina-badge').innerText = selectedFlour.shortLabel;
+
+            if (forno === 'elettrico') {
+                document.getElementById('badge-forno-header').innerText = 'Setup Fornetto Elettrico';
+                document.getElementById('display-style-desc').innerText = data.descElettrico;
+                document.getElementById('label-temp-1').innerText = 'Temperatura Cielo:';
+                document.getElementById('target-cielo').innerText = data.cielo;
+                document.getElementById('label-temp-2').innerText = 'Temperatura Platea:';
+                document.getElementById('target-platea').innerText = data.platea;
+                document.getElementById('target-tempo').innerText = data.tempoElettrico;
+                document.getElementById('guide-badge-mode').innerText = data.badgeElettrico;
+            } else {
+                document.getElementById('badge-forno-header').innerText = 'Setup Forno da Cucina';
+                document.getElementById('display-style-desc').innerText = data.descCucina;
+                document.getElementById('label-temp-1').innerText = 'Temperatura & Modalità:';
+                document.getElementById('target-cielo').innerText = data.tempCucina1;
+                document.getElementById('label-temp-2').innerText = 'Posizione Ripiano:';
+                document.getElementById('target-platea').innerText = data.tempCucina2;
+                document.getElementById('target-tempo').innerText = data.tempoCucina;
+                document.getElementById('guide-badge-mode').innerText = data.badgeCucina;
+            }
+
+            // Header Guida Passo-Passo
+            const fornoLabel = forno === 'elettrico' ? 'Fornetto Elettrico' : 'Forno da Cucina (Max 250°C)';
+            const metodoTesto = metodo === 'planetaria' ? 'Planetaria (Kenwood XL)' : 'A Mano (Tradizionale)';
+            document.getElementById('guide-style-name').innerText = data.name;
+            document.getElementById('guide-forno-text').innerText = fornoLabel;
+            document.getElementById('guide-farina-text').innerText = selectedFlour.shortLabel;
+            document.getElementById('guide-metodo-text').innerText = metodoTesto;
+
+            // Costruzione Testi Guida Passo-Passo (Fase 1, Fase 2, Fase 3)
+            const lievitoFullText = `${lievitoGrammi.toFixed(2).replace(/\.00$/, '')} ${unitLievitoText}`;
+            const farina80 = Math.round(farinaRound * 0.8);
+            const farina20 = farinaRound - farina80;
+            const acqua85 = Math.round(acquaRound * 0.85);
+            const acqua15 = acquaRound - acqua85;
+            const acqua80 = Math.round(acquaRound * 0.8);
+            const acqua20 = acquaRound - acqua80;
+
+            let step1HTML = "";
+            let step2HTML = "";
+            let step3HTML = "";
+
+            if (currentStyle === 'pugliese') {
+                document.getElementById('title-step-1').innerText = `Fase 1: Patate & Impasto (${metodoTesto})`;
+                document.getElementById('title-step-2').innerText = `Fase 2: Pieghe, Lievitazione & Pomodorini`;
+                document.getElementById('title-step-3').innerText = `Fase 3: Cottura (${fornoLabel})`;
+
+                const stepPatate = `<p><strong class="text-amber-400">0. Preparazione Patate:</strong> Lessa <strong class="text-white">${pugliesePatate}g</strong> di patate a pasta gialla con tutta la buccia in acqua bollente per ~30 min. Scolale, falle intiepidire per far perdere il vapore in eccesso, pelale e schiacciale con lo schiacciapatate.</p>`;
+
+                if (metodo === 'planetaria') {
+                    step1HTML = stepPatate + `
+                        <p><strong class="text-white">1. Incordatura Farine & Acqua:</strong> Nella ciotola della Kenwood XL (usa la <strong>Foglia K</strong> per 4 min poi passa al <strong>Gancio</strong>) unisci <strong class="text-white">${farinaRound}g</strong> di Farina 00 (<strong class="text-amber-400">${selectedFlour.name}</strong>), <strong class="text-amber-300">${semolaRound}g</strong> di semola rimacinata e <strong class="text-white">${lievitoFullText}</strong>. Avvia a velocità bassa versando a filo i <strong class="text-white">${acquaRound}g</strong> di acqua in cui avrai sciolto i <strong class="text-white">${saleText}g</strong> di sale${usaZucchero ? ` e i <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero/malto` : ''}, fino a incordatura.</p>
+                        <p><strong class="text-white">2. Inserimento Olio & Patate:</strong> A impasto incordato, aggiungi ${usaOlio ? `i <strong class="text-amber-400">${olioText}g</strong> di olio EVO e ` : ''}le <strong class="text-amber-400">${pugliesePatate}g</strong> di patate schiacciate, facendo andare finché non sono completamente assorbite (l'impasto resterà morbido e umido).</p>
+                    `;
+                } else {
+                    step1HTML = stepPatate + `
+                        <p><strong class="text-white">1. Impasto in ciotola a mano:</strong> Mescola <strong class="text-white">${farinaRound}g</strong> di Farina 00 (<strong class="text-amber-400">${selectedFlour.name}</strong>), <strong class="text-amber-300">${semolaRound}g</strong> di semola rimacinata e <strong class="text-white">${lievitoFullText}</strong>. Versa gradualmente i <strong class="text-white">${acquaRound}g</strong> di acqua con i <strong class="text-white">${saleText}g</strong> di sale${usaZucchero ? ` e <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero` : ''}, impastando energicamente in ciotola fino a raccogliere tutta la farina.</p>
+                        <p><strong class="text-white">2. Olio & Patate schiacciate:</strong> Incorpora le <strong class="text-amber-400">${pugliesePatate}g</strong> di patate tiepide schiacciate${usaOlio ? ` e i <strong class="text-amber-400">${olioText}g</strong> di olio EVO` : ''} lavorando con pieghe in ciotola fino a ottenere una massa morbida e omogenea.</p>
+                    `;
+                }
+
+                step2HTML = `
+                    <p><strong class="text-white">1. Pieghe & Lievitazione (2 ore):</strong> Rovescia sul piano oliato, dividi in <strong class="text-white">${numPizze} porzioni da ${grammiPanetto}g</strong> e fai 2 giri di pieghe (lembi verso il centro) a distanza di 15 minuti. Forma le palline e lascia lievitare in ciotole unte nel forno spento per <strong>2 ore</strong> fino al raddoppio.</p>
+                    <p><strong class="text-white">2. Stesura & Farcitura Barese:</strong> Ungi bene ${numPizze} teglie tonde (Ø 30 cm) e stendi con i polpastrelli dal centro verso i bordi. Taglia a metà <strong class="text-rose-400">${pugliesePomodorini}g</strong> di pomodorini ciliegino e schiacciali con decisione nell'impasto per creare le fossette umide. Aggiungi <strong class="text-white">${puglieseOlive} olive baresane</strong>, origano secco, sale e lascia riposare altri <strong>30 minuti</strong>.</p>
+                `;
+
+                if (forno === 'cucina') {
+                    step3HTML = `<p>Preriscalda il forno da cucina in modalità <strong>statica a 250°C</strong>. Irrora la superficie con un filo d'olio EVO e inforna <strong>una teglia alla volta sul ripiano più basso</strong> (per ottenere la base croccante tipica dei panifici). Cuoci per <strong>15-18 minuti</strong> finché la superficie è dorata e il fondo ben colorito.</p>`;
+                } else {
+                    step3HTML = `<p>Imposta il fornetto elettrico con <strong>Cielo a 250°C</strong> e <strong>Platea a 260°C</strong> (non usare 450°C altrimenti bruci i pomodorini prima di cuocere l'interno). Irrora con un filo d'olio EVO e cuoci per <strong>14-16 minuti</strong> controllando la doratura dei bordi e del fondo.</p>`;
+                }
+
+            } else if (currentStyle === 'ligure') {
+                document.getElementById('title-step-1').innerText = `Fase 1: Lievitino & Impasto (${metodoTesto})`;
+                document.getElementById('title-step-2').innerText = `Fase 2: Stesura in Leccarda & Salamoia`;
+                document.getElementById('title-step-3').innerText = `Fase 3: Cottura & Lucidatura (${fornoLabel})`;
+
+                const stepLievitino = `<p><strong class="text-teal-400">0. La sera prima (Lievitino — 12h in frigo):</strong> Sciogli <strong class="text-white">${ligureLievitinoLievito}g</strong> di lievito in <strong class="text-white">${ligureLievitinoAcqua}g</strong> di acqua fredda, aggiungi <strong class="text-white">${ligureLievitinoFarina}g</strong> di farina (<strong class="text-amber-400">${selectedFlour.name}</strong>) e impasta a mano in ciotola fino a formare una palla liscia. Metti in un contenitore stretto e alto coperto in frigo per <strong>12 ore</strong>.</p>`;
+
+                if (metodo === 'planetaria') {
+                    step1HTML = stepLievitino + `
+                        <p><strong class="text-white">1. Impasto al mattino (Kenwood XL):</strong> Metti nella ciotola il lievitino pronto, <strong class="text-white">${ligureImpastoFarina}g</strong> di <strong class="text-amber-400">${selectedFlour.name}</strong>, <strong class="text-white">${ligureImpastoLievito}g</strong> di lievito${usaZucchero ? `, <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero/malto` : ''} e metà dei <strong class="text-white">${ligureImpastoAcqua}g</strong> di acqua. Avvia con <strong>Foglia K</strong> (o Gancio) e aggiungi la restante acqua poco alla volta fino a completo assorbimento.</p>
+                        <p><strong class="text-white">2. Incordatura con Olio & Sale:</strong> Passa al <strong>Gancio</strong> e inserisci alternandoli i <strong class="text-white">${saleText}g</strong> di sale${usaOlio ? ` e i <strong class="text-amber-400">${olioText}g</strong> di olio EVO versati a filo` : ''} fino a incordatura (impasto elastico e leggermente appiccicoso che pulisce le pareti).</p>
+                    `;
+                } else {
+                    step1HTML = stepLievitino + `
+                        <p><strong class="text-white">1. Impasto a mano al mattino:</strong> Spezzetta il lievitino pronto in ciotola con metà dei <strong class="text-white">${ligureImpastoAcqua}g</strong> di acqua e <strong class="text-white">${ligureImpastoLievito}g</strong> di lievito${usaZucchero ? ` + <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero` : ''}. Unisci <strong class="text-white">${ligureImpastoFarina}g</strong> di <strong class="text-amber-400">${selectedFlour.name}</strong> e versa gradualmente l'acqua restante impastando energicamente.</p>
+                        <p><strong class="text-white">2. Sale & Olio sul banco:</strong> Aggiungi i <strong class="text-white">${saleText}g</strong> di sale${usaOlio ? ` e incorpora a filo i <strong class="text-amber-400">${olioText}g</strong> di olio EVO` : ''} lavorando sul piano per 10-12 minuti fino a ottenere un panetto elastico e liscio.</p>
+                    `;
+                }
+
+                step2HTML = `
+                    <p><strong class="text-white">1. Pirlatura & Stesura in 2 tempi:</strong> Pirla l'impasto (<strong class="text-white">${pesoTotale}g</strong>) su piano unto e lascia puntare <strong>45 minuti</strong> in ciotola coperta. Rovescia nella leccarda ben unta (30×40 cm), allarga dal centro, lascia riposare <strong>30 minuti</strong>, poi stendi fino agli angoli (spessore ~1 dito) e lascia lievitare coperto <strong>2 ore</strong>.</p>
+                    <p><strong class="text-amber-400">2. Fossette & Salamoia:</strong> Sciogli <strong class="text-white">${ligureSalamoiaSale}g</strong> di sale in <strong class="text-white">${ligureSalamoiaAcqua}g</strong> di acqua tiepida, aggiungi <strong class="text-white">${ligureSalamoiaOlio}g</strong> di olio EVO e sbatti con una forchetta finché diventa torbida. Fai i buchi con i polpastrelli senza bucare il fondo, versa la salamoia nelle fossette e lascia lievitare altri <strong>60 minuti</strong> fuori dal forno.</p>
+                `;
+
+                if (forno === 'cucina') {
+                    step3HTML = `<p>Preriscalda il forno da cucina a <strong>240°C ventilato</strong> (oppure <strong>230°C statico</strong>). Inforna sul <strong>ripiano centrale</strong> e cuoci per <strong>15 minuti in ventilato</strong> (17–18 minuti in statico): il fondo deve risultare dorato e la superficie chiara e lucida. Appena sfornata, spennella subito con olio EVO e dopo 2–3 minuti spostala su una gratella.</p>`;
+                } else {
+                    step3HTML = `<p>Imposta il fornetto elettrico a <strong>240°C Cielo / 240°C Platea</strong> (verifica che la teglia entri comodamente). Cuoci per <strong>14–16 minuti</strong> controllando la doratura del fondo con una paletta. Appena sfornata, spennella tutta la superficie con olio EVO e spostala su una gratella per mantenere il fondo croccante.</p>`;
+                }
+
+            } else {
+                // Stili standard (Napoletana, Romana, Tonda Classica, Panuozzo)
+                document.getElementById('title-step-1').innerText = `Fase 1: Impasto (${metodoTesto})`;
+                document.getElementById('title-step-2').innerText = `Fase 2: Lievitazione (${oreLievitazione}h) & Panetti (${grammiPanetto}g)`;
+                document.getElementById('title-step-3').innerText = `Fase 3: Cottura (${fornoLabel})`;
+
+                if (metodo === 'planetaria') {
+                    if (farinaKey === 'caputo_nuvola') {
+                        step1HTML = `
+                            <p><strong class="text-white">1. Avvio con Foglia (Frusta K) — 4 min:</strong> Versa tutti i <strong class="text-white">${acquaRound}g</strong> di acqua fredda di frigo (4°C), sciogli i <strong class="text-white">${lievitoFullText}</strong>${usaZucchero ? ` con i <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero/malto` : ''} e unisci il 100% della <strong class="text-amber-400">Caputo Nuvola (${farinaRound}g)</strong>. Avvia con <strong>Foglia K</strong> a velocità 1-2 per 3-4 minuti.</p>
+                            <p><strong class="text-white">2. Riposo in ciotola — 15 min:</strong> Spegni la Kenwood, copri e lascia riposare 15 minuti per far sviluppare il glutine senza attrito.</p>
+                            <p><strong class="text-white">3. Gancio + Sale — 5 min:</strong> Monta il <strong>Gancio</strong>, aggiungi i <strong class="text-white">${saleText}g</strong> di sale e lavora a velocità 2 per 4-5 minuti fino a ciotola pulita.</p>
+                            ${usaOlio ? `<p><strong class="text-amber-400">4. Olio EVO a filo — 2 min:</strong> Solo a maglia chiusa e ciotola pulita, versa i <strong class="text-amber-400">${olioText}g</strong> di olio EVO un cucchiaino alla volta a velocità 2, poi fai 2 pieghe sul banco.</p>` : `<p><strong class="text-white">4. Chiusura:</strong> Rovescia sul banco, dai 2 pieghe di rinforzo a mano e lascia puntare.</p>`}
+                        `;
+                    } else if (farinaKey === 'caputo_pizzeria') {
+                        step1HTML = `
+                            <p><strong class="text-white">1. Avvio con Foglia (Frusta K) — 4 min:</strong> Versa tutti i <strong class="text-white">${acquaRound}g</strong> di acqua fredda nella ciotola, sciogli i <strong class="text-white">${lievitoFullText}</strong>${usaZucchero ? ` e i <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero/malto` : ''}. Unisci l'80% di <strong class="text-amber-400">Caputo Pizzeria (${farina80}g)</strong> e lavora con <strong>Foglia K</strong> a velocità 1-2 per 4 minuti.</p>
+                            <p><strong class="text-white">2. Riposo — 10 min:</strong> Spegni e lascia riposare 10 minuti a ciotola coperta.</p>
+                            <p><strong class="text-white">3. Gancio + Sale e Farina residua — 6 min:</strong> Monta il <strong>Gancio</strong>, inserisci i <strong class="text-white">${saleText}g</strong> di sale e i restanti <strong class="text-accent">${farina20}g</strong> di farina a velocità 2-3 fino a incordatura.</p>
+                            ${usaOlio ? `<p><strong class="text-amber-400">4. Olio EVO a filo — 2 min:</strong> A ciotola pulita, versa i <strong class="text-amber-400">${olioText}g</strong> di olio EVO a filo fino a totale assorbimento.</p>` : ''}
+                        `;
+                    } else {
+                        step1HTML = `
+                            <p><strong class="text-white">1. Avvio con Foglia (Frusta K) — 5 min:</strong> Versa l'85% dell'acqua fredda (<strong class="text-white">${acqua85}g</strong> su ${acquaRound}g), sciogli i <strong class="text-white">${lievitoFullText}</strong>${usaZucchero ? ` con i <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero/malto` : ''} e aggiungi tutta la <strong class="text-amber-400">${selectedFlour.name} (${farinaRound}g)</strong>. Lavora con <strong>Foglia K</strong> a velocità 1-2 per 4-5 minuti.</p>
+                            <p><strong class="text-white">2. Riposo idrolisi — 15-20 min:</strong> Spegni e lascia riposare coperto 15-20 minuti.</p>
+                            <p><strong class="text-white">3. Gancio + Sale e Acqua residua — 7 min:</strong> Monta il <strong>Gancio</strong>, unisci i <strong class="text-white">${saleText}g</strong> di sale e versa a filo i restanti <strong class="text-accent">${acqua15}g</strong> di acqua fredda a velocità 2-3 fino a incordatura.</p>
+                            ${usaOlio ? `<p><strong class="text-amber-400">4. Olio EVO a filo — 2 min:</strong> A impasto liscio e staccato dalle pareti, incorpora i <strong class="text-amber-400">${olioText}g</strong> di olio EVO un cucchiaino alla volta.</p>` : ''}
+                        `;
+                    }
+                } else {
+                    if (farinaKey === 'caputo_nuvola') {
+                        step1HTML = `
+                            <p><strong class="text-white">1. Miscelazione in ciotola:</strong> Versa i <strong class="text-white">${acquaRound}g</strong> di acqua, sciogli i <strong class="text-white">${lievitoFullText}</strong>${usaZucchero ? ` con i <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero/malto` : ''} e aggiungi tutti i <strong class="text-amber-400">${farinaRound}g di Caputo Nuvola</strong> mescolando fino ad assorbire tutta la farina.</p>
+                            <p><strong class="text-white">2. Riposo (Autolisi rapida) — 15 min:</strong> Copri la ciotola e lascia riposare 15 minuti.</p>
+                            <p><strong class="text-white">3. Sale e Impasto sul banco:</strong> Aggiungi i <strong class="text-white">${saleText}g</strong> di sale, rovescia sul piano e impasta a mano per 8-10 minuti fino a ottenere un panetto liscio${usaOlio ? `, poi incorpora i <strong class="text-amber-400">${olioText}g</strong> di olio EVO poco per volta con pieghe slap & fold` : ''}.</p>
+                        `;
+                    } else if (farinaKey === 'caputo_pizzeria') {
+                        step1HTML = `
+                            <p><strong class="text-white">1. Scioglimento e prima farina:</strong> Sciogli i <strong class="text-white">${lievitoFullText}</strong>${usaZucchero ? ` e i <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero` : ''} nei <strong class="text-white">${acquaRound}g</strong> di acqua. Aggiungi <strong class="text-amber-400">${farina80}g</strong> di Caputo Pizzeria creando una pastella liscia.</p>
+                            <p><strong class="text-white">2. Sale, Farina residua e Banco:</strong> Unisci i <strong class="text-white">${saleText}g</strong> di sale e i restanti <strong class="text-accent">${farina20}g</strong> di farina, poi lavora sul piano per 10-12 minuti${usaOlio ? ` incorporando infine i <strong class="text-amber-400">${olioText}g</strong> di olio EVO` : ''}.</p>
+                        `;
+                    } else {
+                        step1HTML = `
+                            <p><strong class="text-white">1. Idratazione iniziale (80% acqua):</strong> Sciogli i <strong class="text-white">${lievitoFullText}</strong>${usaZucchero ? ` con <strong class="text-amber-400">${zuccheroText}g</strong> di zucchero` : ''} in <strong class="text-white">${acqua80}g</strong> di acqua, unisci tutti i <strong class="text-amber-400">${farinaRound}g di ${selectedFlour.name}</strong> e lascia riposare <strong>20 minuti</strong>.</p>
+                            <p><strong class="text-white">2. Sale, Acqua residua & Pieghe:</strong> Aggiungi i <strong class="text-white">${saleText}g</strong> di sale e i restanti <strong class="text-accent">${acqua20}g</strong> di acqua poco per volta, eseguendo 2-3 serie di pieghe <em>slap & fold</em> sul banco${usaOlio ? ` prima di incorporare i <strong class="text-amber-400">${olioText}g</strong> di olio EVO` : ''}.</p>
+                        `;
+                    }
+                }
+
+                if (oreLievitazione === 8) {
+                    step2HTML = `<p><strong>Puntata e Appretto a T.A. (~20°C):</strong> Fai riposare l'impasto in massa coperto per 2 ore. Staglia e forma <strong class="text-white">${numPizze} panetti da ${grammiPanetto}g</strong> e riponili in cassetta ermetica per le restanti 6 ore fino al raddoppio.</p>`;
+                } else if (oreLievitazione === 24) {
+                    step2HTML = `<p><strong>Gestione Mista (2h TA + 22h Frigo):</strong> Lascia riposare l'impasto in massa a temperatura ambiente per 2 ore, poi metti in frigorifero (4°C) per 20 ore. Il giorno dopo staglia <strong class="text-white">${numPizze} panetti da ${grammiPanetto}g</strong> e falli lievitare a T.A. per le ultime 2 ore.</p>`;
+                } else {
+                    step2HTML = `<p><strong>Lievitazione Lenta Frigo (48h):</strong> Fai partire l'impasto a T.A. per 1 ora, poi trasferisci in frigo per 44 ore. Forma <strong class="text-white">${numPizze} panetti da ${grammiPanetto}g</strong> e lasciali acclimatare a T.A. per le ultime 3 ore.</p>`;
+                }
+
+                if (forno === 'elettrico') {
+                    step3HTML = `<p>Preriscalda il fornetto elettrico impostando il <strong>Cielo a ${data.cielo}</strong> e la <strong>Platea a ${data.platea}</strong> per almeno 20-30 minuti. Inforna e cuoci per <strong>${data.tempoElettrico}</strong> controllando la doratura uniforme.</p>`;
+                } else {
+                    if (currentStyle === 'napoletana') {
+                        step3HTML = `<p>Preriscalda il forno di casa al massimo (<strong>250°C statico</strong>) con una leccarda rovesciata o pietra refrattaria sul ripiano più basso. Inforna la base condita <strong>solo con pomodoro per 6 minuti</strong>, poi sforna, aggiungi fior di latte ben scolato e basilico, e rimetti in forno (anche con grill attivo) per gli ultimi <strong>2–3 minuti</strong>.</p>`;
+                    } else if (currentStyle === 'romana') {
+                        step3HTML = `<p>Preriscalda il forno di casa a <strong>250°C statico</strong>. Stendi il panetto da <strong>${grammiPanetto}g</strong> in teglia unta, condisci con pomodoro e cuoci sul <strong>ripiano più basso per 10–12 minuti</strong>, aggiungendo la mozzarella negli ultimi 3 minuti sul ripiano centrale.</p>`;
+                    } else {
+                        step3HTML = `<p>Preriscalda il forno di casa a <strong>${data.tempCucina1}</strong>. Cuoci sul <strong>${data.tempCucina2}</strong> per <strong>${data.tempoCucina}</strong> fino a doratura croccante.</p>`;
+                    }
+                }
+            }
+
+            const toppingsInfo = renderToppingsSection(numPizze);
+            if (!isFocaccia && toppingsInfo.hasRawFinish) {
+                step3HTML += `<p class="mt-2 pt-2 border-t border-zinc-800 text-emerald-300"><strong>🌿 Finitura a crudo:</strong> hai selezionato gusti con ingredienti a crudo (es. mortadella, stracciatella/burrata, pesto di basilico o pistacchio, salsiccia di Bra, prosciutto crudo, melanzane fritte, ricotta salata o rucola). Inforna prima la base con i soli ingredienti da cottura e aggiungi quelli a crudo solo appena sfornata.</p>`;
+            }
+
+            document.getElementById('step-1-text').innerHTML = step1HTML;
+            document.getElementById('step-2-text').innerHTML = step2HTML;
+            document.getElementById('step-3-text').innerHTML = step3HTML;
+        }
+
+        function copyRecipe() {
+            const farina = document.getElementById('res-farina').innerText;
+            const semola = document.getElementById('res-semola').innerText;
+            const farinaKey = document.getElementById('select-farina').value;
+            const selectedFlour = flourData[farinaKey];
+            const acqua = document.getElementById('res-acqua').innerText;
+            const sale = document.getElementById('res-sale').innerText;
+            const olio = document.getElementById('res-olio').innerText;
+            const zucchero = document.getElementById('res-zucchero').innerText;
+            const lievito = document.getElementById('res-lievito').innerText;
+            const unitLievito = document.getElementById('unit-lievito').innerText;
+            const numPizze = document.getElementById('input-num-pizze').value;
+            const grammi = document.getElementById('input-grammi-panetto').value;
+            const metodo = document.getElementById('select-metodo').value === 'planetaria' ? 'Planetaria (Kenwood XL)' : 'A Mano';
+            const forno = document.getElementById('select-forno').value === 'elettrico' ? 'Fornetto Elettrico' : 'Forno da Cucina (250°C)';
+
+            let text = `🍕 RICETTA MARCI'S VOLT PIZZA LAB
+`;
+            text += `Stile: ${styleData[currentStyle].name}
+`;
+            text += `Forno: ${forno} | Metodo: ${metodo}
+`;
+            text += `Farina: ${selectedFlour.fullLabel}
+`;
+            text += `Quantità: ${numPizze} pezzi/teglie da ${grammi}g
+--------------------
+`;
+            text += `• Farina 00: ${farina}g
+`;
+            if (currentStyle === 'pugliese') text += `• Semola rimacinata: ${semola}g
+`;
+            text += `• Acqua: ${acqua}g
+`;
+            text += `• Sale: ${sale}g
+`;
+            if (document.getElementById('check-olio').checked) text += `• Olio EVO: ${olio}g
+`;
+            if (document.getElementById('check-zucchero').checked) text += `• Zucchero / Malto: ${zucchero}g
+`;
+            text += `• Lievito: ${lievito} ${unitLievito}
+`;
+
+            if (currentStyle === 'pugliese') {
+                const scale = (numPizze * grammi) / 1000;
+                text += `• Patate lesse (peso crudo): ${Math.round(140 * scale)}g
+`;
+                text += `• Farcitura: ${Math.round(500 * scale)}g pomodorini + ${Math.max(4, Math.round(20 * scale))} olive baresane + origano
+`;
+            } else if (currentStyle === 'ligure') {
+                const scale = (numPizze * grammi) / 1000;
+                text += `• Salamoia: ${Math.round(90 * scale)}g acqua tiepida + ${Math.round(45 * scale)}g olio EVO + ${(15 * scale).toFixed(1)}g sale
+`;
+            }
+
+            const styleToppings = toppingsData[currentStyle];
+            if (styleToppings) {
+                const chosen = styleToppings.filter(t => (toppingCounts[t.id] || 0) > 0);
+                if (chosen.length > 0) {
+                    text += `\n🧀 FARCITURE SCELTE:\n`;
+                    chosen.forEach(t => {
+                        text += `• ${toppingCounts[t.id]}x ${t.name}\n`;
+                    });
+                    const agg = {};
+                    chosen.forEach(t => {
+                        const c = toppingCounts[t.id];
+                        t.items.forEach(item => {
+                            const k = `${item.name} (${item.raw ? 'a crudo' : 'in forno'})`;
+                            if (!agg[k]) agg[k] = { qty: 0, unit: item.unit };
+                            if (item.unit !== 'q.b.') agg[k].qty += item.qty * c;
+                        });
+                    });
+                    text += `🛒 TOTALE CONDIMENTI:\n`;
+                    Object.keys(agg).forEach(k => {
+                        const info = agg[k];
+                        text += `• ${k}: ${info.unit === 'q.b.' ? 'q.b.' : info.qty + ' ' + info.unit}\n`;
+                    });
+                }
+            }
+
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            alert('Ricetta copiata negli appunti!');
+        }
+
+        window.onload = function() {
+            setStyle('napoletana', false);
+        };
+    </script>
+</body>
+</html>
